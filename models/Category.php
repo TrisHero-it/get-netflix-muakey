@@ -14,4 +14,6 @@ class Category extends db
         $query = "INSERT INTO categories (name) VALUES ('$name')";
         return $this->getData($query, false);
     }
+
+    
 }

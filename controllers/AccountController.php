@@ -25,29 +25,39 @@ class AccountController extends Account
 
     public function store()
     {
+        $shipment = $this->getLastShipments();
+        $shipment = $shipment['shipments'] + 1;
         if ($_FILES['excel_file']['name'] == '') {
             $email = $_POST['email'];
             $category = $_POST['category_id'];
-            if ($_POST['quantity'] > 1) {
-                for ($i = 0; $i < $_POST['quantity']; $i++) {
-                    $this->insert($email, $_POST['password'], $_POST['code_2fa'], $this->randomString(), $category, $i);
-                }
-            } else {
-                $this->insert($email, $_POST['password'], $_POST['code_2fa'], $this->randomString(), $category, 0);
-            }
+            $code2fa = $_POST['code_2fa'] == "" ? 'null' : "'" . $_POST['code_2fa'] . "'";
+            $pin = $_POST['pin'] == "" ? 'null' : "'" . $_POST['pin'] . "'";
+            $this->insert(
+                $email,
+                $_POST['password'],
+                $code2fa,
+                $this->randomString(),
+                $category,
+                $_POST['user'],
+                $shipment,
+                $pin
+            );
         } else {
             $fileTmpPath = $_FILES['excel_file']['tmp_name'];
             $spreadsheet = IOFactory::load($fileTmpPath);
             $sheet = $spreadsheet->getActiveSheet();
             $data = $sheet->toArray();
             foreach ($data as $item) {
-                if ($item[3] > 1) {
-                    for ($i = 0; $i < $item[3]; $i++) {
-                        $this->insert($item[0], $item[1], $item[2], $this->randomString(), $_POST['category_id'], $i);
-                    }
-                } else {
-                    $this->insert($item[0], $item[1], $item[2], $this->randomString(), $_POST['category_id'], 0);
-                }
+                $this->insert(
+                    $item[0],
+                    $item[1],
+                    $item[2],
+                    $this->randomString(),
+                    $_POST['category_id'],
+                    $item[3],
+                    $shipment,
+                    $item[4]
+                );
             }
         }
 

@@ -21,10 +21,12 @@
     require_once 'controllers/CodeController.php';
     require_once 'controllers/AccountController.php';
     require_once 'controllers/CategoryController.php';
+    require_once 'controllers/GuideTopicController.php';
     require_once 'vendor/autoload.php';
     $codeController = new CodeController();
     $accountController = new AccountController();
     $categoryController = new CategoryController();
+    $guideTopicController = new GuideTopicController();
     $action = $_GET['act'] ?? 'index';
     $ip = $codeController->getClientIP();
     if ($ip == '42.116.188.44' || $ip == '127.0.0.1') {
@@ -53,6 +55,14 @@
             case "store-category":
                 $categoryController->store();
                 break;
+            // Hướng dẫn
+            case "guide-topics":
+                $guideTopicController->index();
+                break;
+            case "add-guide-topic":
+                $guideTopicController->add();
+                break;
+
             default:
                 $codeController->index();
                 break;

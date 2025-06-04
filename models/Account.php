@@ -5,8 +5,14 @@ class Account extends db
 
     public function getAllAccounts()
     {
-        $query = "SELECT * FROM accounts";
+        $query = "SELECT * FROM accounts order by shipments desc";
         return $this->getData($query);
+    }
+
+    public function getLastShipments()
+    {
+        $query = "SELECT shipments FROM accounts ORDER BY shipments DESC LIMIT 1";
+        return $this->getData($query, false);
     }
 
     public function getAccountByEmailAndType($email, $type)
@@ -15,11 +21,11 @@ class Account extends db
         return $this->getData($query, false);
     }
 
-    public function insert($email, $password, $code2fa, $code, $category, $user)
+    public function insert($email, $password, $code2fa, $code, $category, $user, $shipment = 1, $pin = null)
     {
-        $pdo = $this->getConnect();
-        $stmt = $pdo->prepare("INSERT INTO accounts (email, password, code_2fa, code, category_id, user) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$email, $password, $code2fa, $code, $category, $user]);
+        $query = "INSERT INTO accounts (email, password, code_2fa, code, category_id, user, shipments, pin_code) 
+        VALUES ('$email', '$password', $code2fa , '$code', '$category', '$user', '$shipment', $pin)";
+        $this->getData($query, false);
     }
 
     public function deleteAccount($id)

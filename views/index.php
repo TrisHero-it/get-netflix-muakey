@@ -46,11 +46,15 @@ use OTPHP\TOTP;
                                             <div class="d-flex align-items-center">
                                                 <span class="badge badge-dot mr-4" style="color: black">
                                                     <?php
-                                                    $raw = $account['code_2fa'];
-                                                    $secret = strtoupper(str_replace(' ', '', $raw)); // "4NDNVBKT5HABZV3ITTEYAV7OHRH5MSK6"
-                                                    $totp = TOTP::create($secret);
-                                                    $otp = $totp->now();
-                                                    echo "<span id='otp' style='color: green;'>" . $otp . "</span>";
+                                                    if ($account['code_2fa'] != null) {
+                                                        $raw = $account['code_2fa'];
+                                                        $secret = strtoupper(str_replace(' ', '', $raw)); // "4NDNVBKT5HABZV3ITTEYAV7OHRH5MSK6"
+                                                        $totp = TOTP::create($secret);
+                                                        $otp = $totp->now();
+                                                        echo "<span id='otp' style='color: green;'>" . $otp . "</span>";
+                                                    } else {
+                                                        echo "<span id='otp2' style='color: green;'>Tài khoản không cần mã 2FA</span>";
+                                                    }
                                                     ?>
                                                 </span>
                                             </div>
@@ -63,29 +67,35 @@ use OTPHP\TOTP;
                                                     $period = 30; // mặc định là 30 giây
                                                     $currentTime = time();
                                                     $secondsRemaining = $period - ($currentTime % $period);
-                                                    echo "Còn " . $secondsRemaining . " giây";
+                                                    if ($account['code_2fa'] != null) {
+                                                        echo "Còn " . $secondsRemaining . " giây";
+                                                    } else {
+                                                        echo "Còn ∞ giây";
+                                                    }
                                                     ?>
                                                 </span>
                                             </div>
 
-                                            <script>
-                                                let seconds = <?= $secondsRemaining ?>;
-                                                const countdownEl = document.getElementById("countdown");
-                                                const otpEl = document.getElementById("otp");
+                                            <?php if ($account['code_2fa'] != null) { ?>
+                                                <script>
+                                                    let seconds = <?= $secondsRemaining ?>;
+                                                    const countdownEl = document.getElementById("countdown");
+                                                    const otpEl = document.getElementById("otp");
 
-                                                const interval = setInterval(() => {
-                                                    seconds--;
+                                                    const interval = setInterval(() => {
+                                                        seconds--;
 
-                                                    if (seconds <= 0) {
-                                                        countdownEl.innerHTML = "<span style='color: red;'>Load lại trang để lấy code mới</span>";
-                                                        window.location.href = window.location.href;
-                                                        clearInterval(interval);
-                                                        return;
-                                                    }
+                                                        if (seconds <= 0) {
+                                                            // countdownEl.innerHTML = "<span style='color: red;'>Load lại trang để lấy code mới</span>";
+                                                            window.location.href = window.location.href;
+                                                            clearInterval(interval);
+                                                            return;
+                                                        }
 
-                                                    countdownEl.innerText = "Còn " + seconds + " giây";
-                                                }, 1000);
-                                            </script>
+                                                        countdownEl.innerText = "Còn " + seconds + " giây";
+                                                    }, 1000);
+                                                </script>
+                                            <?php } ?>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center">
