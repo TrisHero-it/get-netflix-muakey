@@ -4,6 +4,7 @@
                 Danh sách tài khoản
             </h3>
             <div class="d-flex" justify-content-between>
+                <a href="?act=list" class="btn btn-success">Danh sách tài khoản</a>
                 <a href="?act=add" class="btn btn-primary">Thêm tài khoản</a>
                 <a href="?act=add-category" class="btn btn-warning">Thêm danh mục</a>
                 <a href="?act=export" class="btn btn-secondary text-light">Xuất file</a>

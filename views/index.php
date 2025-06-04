@@ -19,6 +19,8 @@ use OTPHP\TOTP;
                                     <th scope="col">Mật khẩu</th>
                                     <th scope="col">Mã 2fa</th>
                                     <th scope="col">Thời gian</th>
+                                    <th scope="col">User</th>
+                                    <th scope="col">Loại tài khoản</th>
                                 </tr>
                             </thead>
                             <?php
@@ -85,6 +87,18 @@ use OTPHP\TOTP;
                                                 }, 1000);
                                             </script>
                                         </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge badge-dot mr-4" style="color: black">
+                                                    <?php echo $account['user'] + 1 ?>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge badge-dot mr-4" style="color: black">
+                                                    <?php echo $account['name'] ?>
+                                                </span>
                                     </tr>
                                 </tbody>
                             <?php

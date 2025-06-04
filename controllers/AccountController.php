@@ -27,18 +27,27 @@ class AccountController extends Account
     {
         if ($_FILES['excel_file']['name'] == '') {
             $email = $_POST['email'];
-            $password = $_POST['password'];
-            $code2fa = $_POST['code_2fa'];
-            $code = $this->randomString();
             $category = $_POST['category_id'];
-            $this->insert($email, $password, $code2fa, $code, $category);
+            if ($_POST['quantity'] > 1) {
+                for ($i = 0; $i < $_POST['quantity']; $i++) {
+                    $this->insert($email, $_POST['password'], $_POST['code_2fa'], $this->randomString(), $category, $i);
+                }
+            } else {
+                $this->insert($email, $_POST['password'], $_POST['code_2fa'], $this->randomString(), $category, 0);
+            }
         } else {
             $fileTmpPath = $_FILES['excel_file']['tmp_name'];
             $spreadsheet = IOFactory::load($fileTmpPath);
             $sheet = $spreadsheet->getActiveSheet();
             $data = $sheet->toArray();
             foreach ($data as $item) {
-                $this->insert($item[0], $item[1], $item[2], $this->randomString(), $item[3]);
+                if ($item[3] > 1) {
+                    for ($i = 0; $i < $item[3]; $i++) {
+                        $this->insert($item[0], $item[1], $item[2], $this->randomString(), $_POST['category_id'], $i);
+                    }
+                } else {
+                    $this->insert($item[0], $item[1], $item[2], $this->randomString(), $_POST['category_id'], 0);
+                }
             }
         }
 
@@ -77,7 +86,7 @@ class AccountController extends Account
             die("Kết nối thất bại: " . $conn->connect_error);
         }
 
-        $result = $conn->query("SELECT * FROM accounts");
+        $result = $conn->query("SELECT * FROM accounts join categories on accounts.category_id = categories.id where shipments = " . $_POST['shipments']);
         if (!$result || $result->num_rows == 0) {
             die("Không có dữ liệu hoặc lỗi SQL.");
         }
@@ -90,6 +99,11 @@ class AccountController extends Account
         $sheet->setCellValue('C1', 'Password');
         $sheet->setCellValue('D1', 'Code 2FA');
         $sheet->setCellValue('E1', 'Code');
+        $sheet->setCellValue('F1', 'Thể loại');
+        $sheet->setCellValue('G1', 'User');
+        $sheet->setCellValue('H1', 'Thời gian');
+        $sheet->setCellValue('I1', 'Lô hàng');
+
 
         $row = 2;
         while ($data = $result->fetch_assoc()) {
@@ -98,6 +112,10 @@ class AccountController extends Account
             $sheet->setCellValue("C{$row}", $data['password']);
             $sheet->setCellValue("D{$row}", $data['code_2fa']);
             $sheet->setCellValue("E{$row}", base_url . "?id=" . $data['code']);
+            $sheet->setCellValue("F{$row}", $data['name']);
+            $sheet->setCellValue("G{$row}", $data['user']);
+            $sheet->setCellValue("H{$row}", $data['created_at']);
+            $sheet->setCellValue("I{$row}", $data['shipments']);
             $row++;
         }
 

@@ -15,11 +15,11 @@ class Account extends db
         return $this->getData($query, false);
     }
 
-    public function insert($email, $password, $code2fa, $code, $category)
+    public function insert($email, $password, $code2fa, $code, $category, $user)
     {
         $pdo = $this->getConnect();
-        $stmt = $pdo->prepare("INSERT INTO accounts (email, password, code_2fa, code, category_id) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$email, $password, $code2fa, $code, $category]);
+        $stmt = $pdo->prepare("INSERT INTO accounts (email, password, code_2fa, code, category_id, user) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$email, $password, $code2fa, $code, $category, $user]);
     }
 
     public function deleteAccount($id)
@@ -30,7 +30,7 @@ class Account extends db
 
     public function getAccountByCode($code)
     {
-        $query = "SELECT * FROM accounts WHERE code = '$code'";
+        $query = "SELECT * FROM accounts join categories on accounts.category_id = categories.id WHERE accounts.code = '$code'";
         return $this->getData($query, false);
     }
 }

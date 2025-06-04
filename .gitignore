@@ -1,7 +1,2 @@
 /vendor
-/node_modules
-/dist
-/build
-/public/uploads
-/public/uploads/*
 /models/env.php
