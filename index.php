@@ -40,6 +40,9 @@
             case 'edit':
                 $accountController->edit();
                 break;
+            case 'show':
+                $accountController->show();
+                break;
             case 'update':
                 $accountController->update();
                 break;
@@ -65,12 +68,21 @@
             case "add-guide-topic":
                 $guideTopicController->add();
                 break;
+            case "index2":
+                $codeController->index2();
+                break;
             case "store-guide-topic":
                 $guideTopicController->store();
                 break;
             case "delete-guide-topic":
                 $guideTopicController->delete();
                 break;
+            default:
+                $codeController->index();
+                break;
+        }
+    } else {
+        switch ($action) {
             case "index2":
                 $codeController->index2();
                 break;
@@ -78,18 +90,9 @@
                 $codeController->index();
                 break;
         }
-    } else {
-        $codeController->index();
     }
     ?>
-    <script>
-        const myModal = document.getElementById('myModal')
-        const myInput = document.getElementById('myInput')
 
-        myModal.addEventListener('shown.bs.modal', () => {
-            myInput.focus()
-        })
-    </script>
 </body>
 
 </html>

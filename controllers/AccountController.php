@@ -23,6 +23,14 @@ class AccountController extends Account
         require_once "views/accounts/index.php";
     }
 
+    public function show()
+    {
+        $id = $_GET['id'];
+        $account = $this->getAccountById($id);
+        $account2 = $this->getAccountByAccountId($account['id']);
+        require_once "views/accounts/show.php";
+    }
+
     public function store()
     {
         $shipment = $this->getLastShipments();
@@ -41,7 +49,7 @@ class AccountController extends Account
                 $_POST['user'],
                 $shipment,
                 $pin,
-                $_POST['account_id']
+                $_POST['account_id'] ?? 'null'
             );
         } else {
             $fileTmpPath = $_FILES['excel_file']['tmp_name'];
@@ -52,12 +60,12 @@ class AccountController extends Account
                 $this->insert(
                     $item[0],
                     $item[1],
-                    $item[2],
+                    $item[2] != null ? "'" . $item[2] . "'" : 'null',
                     $this->randomString(),
                     $_POST['category_id'],
-                    $item[3],
+                    $item[3] ?? 1,
                     $shipment,
-                    $item[4],
+                    $item[4] ?? 'null',
                     "null"
                 );
             }

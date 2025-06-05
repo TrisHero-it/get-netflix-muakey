@@ -6,7 +6,7 @@ class CodeController extends Account
 
     public function index()
     {
-        if (isset($_GET['id'])) {
+        if ($_GET['id'] != '') {
             $code = $this->removeInvisibleChars($_GET['id']);
         } else {
             echo "<p style='color: red;'>Không tìm thấy id</p>";
@@ -17,10 +17,15 @@ class CodeController extends Account
             echo "<p style='color: red;'>Không tìm thấy tài khoản</p>";
             die;
         }
+        $account2 = $this->getLatestAccountByAccountId($account['id']);
+        if ($account2 != null) {
+            $account = $account2;
+        }
         $guideTopicModel = new GuideTopic();
         if (isset($account['id'])) {
             $guideTopics = $guideTopicModel->getGuideTopicByCategoryId($account['category_id']);
         }
+
         require_once "views/index.php";
     }
 

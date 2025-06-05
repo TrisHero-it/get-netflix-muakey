@@ -18,6 +18,12 @@ class Account extends db
     public function getAccountByAccountId($accountId)
     {
         $query = "SELECT * FROM accounts WHERE account_id = $accountId";
+        return $this->getData($query);
+    }
+
+    public function getLatestAccountByAccountId($accountId)
+    {
+        $query = "SELECT accounts.id, accounts.account_id, accounts.category_id, categories.name, accounts.code, accounts.created_at, accounts.email, accounts.password, accounts.code_2fa, accounts.user, accounts.pin_code FROM accounts join categories on accounts.category_id = categories.id WHERE account_id = $accountId ORDER BY id DESC LIMIT 1";
         return $this->getData($query, false);
     }
 
@@ -42,7 +48,7 @@ class Account extends db
 
     public function getAccountByCode($code)
     {
-        $query = "SELECT * FROM accounts join categories on accounts.category_id = categories.id WHERE accounts.code = '$code'";
+        $query = "SELECT accounts.id, accounts.account_id, accounts.category_id, categories.name, accounts.code, accounts.created_at, accounts.email, accounts.password, accounts.code_2fa, accounts.user, accounts.pin_code FROM accounts join categories on accounts.category_id = categories.id WHERE accounts.code = '$code'";
         return $this->getData($query, false);
     }
 

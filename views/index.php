@@ -30,7 +30,7 @@ if ($account['code_2fa'] != null) {
 
         if (seconds <= 0) {
             // countdownEl.innerHTML = "<span style='color: red;'>Load lại trang để lấy code mới</span>";
-            window.location.href = window.location.href;
+            window.location.reload();
             clearInterval(interval);
             return;
         }

@@ -69,6 +69,7 @@
                     <td><?php echo $account['pin_code'] ?? 'Không có' ?></td>
                     <td><?php echo $account['created_at'] ?></td>
                     <td>
+                        <a href="?act=show&id=<?php echo $account['id'] ?>" class="btn btn-info">Show</a>
                         <a href="?act=edit&id=<?php echo $account['id'] ?>" class="btn btn-warning">Edit</a>
                         <a onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này không?')" href="?act=delete&id=<?php echo $account['id'] ?>" class="btn btn-danger">Delete</a>
                     </td>
