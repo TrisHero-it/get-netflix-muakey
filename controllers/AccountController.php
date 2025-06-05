@@ -40,7 +40,8 @@ class AccountController extends Account
                 $category,
                 $_POST['user'],
                 $shipment,
-                $pin
+                $pin,
+                $_POST['account_id']
             );
         } else {
             $fileTmpPath = $_FILES['excel_file']['tmp_name'];
@@ -56,10 +57,37 @@ class AccountController extends Account
                     $_POST['category_id'],
                     $item[3],
                     $shipment,
-                    $item[4]
+                    $item[4],
+                    "null"
                 );
             }
         }
+
+        header("Location: ?act=list");
+    }
+
+    public function edit()
+    {
+        $id = $_GET['id'];
+        $account = $this->getAccountById($id);
+        $categoryController = new CategoryController();
+        $categories = $categoryController->getAllCategories();
+        $account2 = $this->getAccountByAccountId($account['id']);
+        require_once "views/accounts/edit.php";
+    }
+
+    public function update()
+    {
+        $id = $_GET['id'];
+        $this->updateAccount(
+            $id,
+            $_POST['email'],
+            $_POST['password'],
+            $_POST['code_2fa'] == '' ? 'null' : "'" . $_POST['code_2fa'] . "'",
+            $_POST['category_id'],
+            $_POST['user'],
+            $_POST['pin'] == '' ? 'null' : "'" . $_POST['pin'] . "'"
+        );
 
         header("Location: ?act=list");
     }

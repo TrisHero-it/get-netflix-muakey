@@ -12,7 +12,7 @@
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Tiêu đề</th>
-                <th scope="col">Nội dung</th>
+                <th scope="col">Đường dẫn</th>
                 <th scope="col">Danh mục</th>
                 <th scope="col">Action</th>
             </tr>
@@ -24,11 +24,10 @@
                 <tr>
                     <td><?php echo $guideTopic['id'] ?></td>
                     <td><?php echo $guideTopic['title'] ?></td>
-                    <td><?php echo $guideTopic['content'] ?></td>
+                    <td><?php echo $guideTopic['link'] ?></td>
                     <td><?php echo $guideTopic['name'] ?></td>
                     <td>
-                        <a href="?act=edit&id=<?php echo $guideTopic['id'] ?>" class="btn btn-warning" style="color: white">Edit</a>
-                        <a onclick="return confirm('Bạn có chắc chắn muốn xóa hướng dẫn này không?')" href="?act=delete&id=<?php echo $guideTopic['id'] ?>" class="btn btn-danger">Delete</a>
+                        <a onclick="return confirm('Bạn có chắc chắn muốn xóa hướng dẫn này không?')" href="?act=delete-guide-topic&id=<?php echo $guideTopic['id'] ?>&category_id=<?php echo $guideTopic['category_id'] ?>" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>
             <?php

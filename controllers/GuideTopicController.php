@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 require_once "models/GuideTopic.php";
 class GuideTopicController extends GuideTopic
 {
@@ -19,10 +21,31 @@ class GuideTopicController extends GuideTopic
 
     public function store()
     {
-        $title = $_POST['title'];
-        $content = $_POST['content'];
         $categoryId = $_POST['category_id'];
-        $this->addGuideTopic($title, $content, $categoryId);
+
+        if ($_FILES['file_excel']['name'] != '') {
+            $fileTmpPath = $_FILES['excel_file']['tmp_name'];
+            $spreadsheet = IOFactory::load($fileTmpPath);
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray();
+            foreach ($data as $item) {
+                $this->addGuideTopic($item[0], $item[1], $categoryId);
+            }
+        } else {
+            $title = $_POST['title'];
+            $link = $_POST['link'];
+            $this->addGuideTopic($title, $link, $categoryId);
+        }
+
+
+        header("Location: ?act=guide-topics&id=" . $categoryId);
+    }
+
+    public function delete()
+    {
+        $id = $_GET['id'];
+        $categoryId = $_GET['category_id'];
+        $this->deleteGuideTopic($id);
         header("Location: ?act=guide-topics&id=" . $categoryId);
     }
 }

@@ -41,6 +41,7 @@
                 <th scope="col">Link</th>
                 <th scope="col">Thể loại</th>
                 <th scope="col">User</th>
+                <th scope="col">Mã pin</th>
                 <th scope="col">Thời gian</th>
                 <th scope="col">Action</th>
             </tr>
@@ -64,9 +65,11 @@
                         }
                     }
                     ?>
-                    <td><?php echo $account['user'] + 1 ?></td>
+                    <td><?php echo $account['user'] ?></td>
+                    <td><?php echo $account['pin_code'] ?? 'Không có' ?></td>
                     <td><?php echo $account['created_at'] ?></td>
                     <td>
+                        <a href="?act=edit&id=<?php echo $account['id'] ?>" class="btn btn-warning">Edit</a>
                         <a onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này không?')" href="?act=delete&id=<?php echo $account['id'] ?>" class="btn btn-danger">Delete</a>
                     </td>
                 </tr>

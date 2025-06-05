@@ -14,9 +14,15 @@ class GuideTopic extends db
         return $this->getData($query);
     }
 
-    public function addGuideTopic($title, $content, $categoryId)
+    public function addGuideTopic($title, $link, $categoryId)
     {
-        $query = "INSERT INTO guide_topics (title, content, category_id) VALUES ('$title', '$content', '$categoryId')";
+        $query = "INSERT INTO guide_topics (title, link, category_id) VALUES ('$title', '$link', '$categoryId')";
+        return $this->getData($query, false);
+    }
+
+    public function deleteGuideTopic($id)
+    {
+        $query = "DELETE FROM guide_topics WHERE id = $id";
         return $this->getData($query, false);
     }
 }
