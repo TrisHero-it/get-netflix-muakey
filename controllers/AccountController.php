@@ -149,6 +149,7 @@ class AccountController extends Account
         $sheet->setCellValue('G1', 'User');
         $sheet->setCellValue('H1', 'Thời gian');
         $sheet->setCellValue('I1', 'Lô hàng');
+        $sheet->setCellValue('J1', 'Mã Pin');
 
 
         $row = 2;
@@ -167,6 +168,64 @@ class AccountController extends Account
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="trideptrai.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+
+    public function exportFormAddAccount()
+    {
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+
+        if (ob_get_length()) ob_end_clean();
+
+        $conn = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
+        if ($conn->connect_error) {
+            die("Kết nối thất bại: " . $conn->connect_error);
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'Email');
+        $sheet->setCellValue('B1', 'Password');
+        $sheet->setCellValue('C1', 'Code 2FA (Nếu có)');
+        $sheet->setCellValue('D1', 'User (Nếu có)');
+        $sheet->setCellValue('E1', 'Mã Pin (Nếu có)');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="form-add-account.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function exportFormAddGuideTopic()
+    {
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+
+        if (ob_get_length()) ob_end_clean();
+
+        $conn = new mysqli(DBHOST, DBUSER, DBPASS, DBNAME);
+        if ($conn->connect_error) {
+            die("Kết nối thất bại: " . $conn->connect_error);
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'Tiêu đề');
+        $sheet->setCellValue('B1', 'Link');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="form-add-guide-topic.xlsx"');
         header('Cache-Control: max-age=0');
 
         $writer = new Xlsx($spreadsheet);

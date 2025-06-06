@@ -77,6 +77,12 @@
             case "delete-guide-topic":
                 $guideTopicController->delete();
                 break;
+            case "exportFormAddAccount":
+                $accountController->exportFormAddAccount();
+                break;
+            case "exportFormAddGuideTopic":
+                $accountController->exportFormAddGuideTopic();
+                break;
             default:
                 $codeController->index();
                 break;

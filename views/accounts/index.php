@@ -1,4 +1,4 @@
-<div class="container mt-5" style="overflow-x: auto;">
+<div class="mt-5" style="overflow-x: auto; margin: 0 15px">
     <div class="d-flex justify-content-between">
         <h3>
             Danh sách tài khoản

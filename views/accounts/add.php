@@ -40,6 +40,9 @@
             <label for="excel_file">File Excel</label>
             <input class="form-control" type="file" name="excel_file" accept=".xlsx, .xls">
         </div>
+
+        <a href="?act=exportFormAddAccount" class="btn btn-primary mt-3">Lấy form excel</a>
+
         <button type="submit" class="btn btn-primary mt-3">Thêm</button>
     </form>
 </div>
