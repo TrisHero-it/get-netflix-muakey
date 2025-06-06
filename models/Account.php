@@ -21,10 +21,22 @@ class Account extends db
         return $this->getData($query);
     }
 
+    public function getLastestAccountReplaceByAccountId($accountId)
+    {
+        $query = "SELECT * FROM accounts WHERE account_id = $accountId ORDER BY id DESC LIMIT 1";
+        return $this->getData($query, false);
+    }
+
     public function getLatestAccountByAccountId($accountId)
     {
         $query = "SELECT accounts.id, accounts.account_id, accounts.category_id, categories.name, accounts.code, accounts.created_at, accounts.email, accounts.password, accounts.code_2fa, accounts.user, accounts.pin_code FROM accounts join categories on accounts.category_id = categories.id WHERE account_id = $accountId ORDER BY id DESC LIMIT 1";
         return $this->getData($query, false);
+    }
+
+    public function getAccountsByEmail($email)
+    {
+        $query = "SELECT * FROM accounts WHERE email = '$email'";
+        return $this->getData($query);
     }
 
     public function getAccountByEmailAndType($email, $type)

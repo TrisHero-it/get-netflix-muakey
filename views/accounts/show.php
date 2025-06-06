@@ -1,21 +1,3 @@
-<?php
-
-use OTPHP\TOTP;
-
-if ($account['code_2fa'] != null) {
-    $period = 30; // mặc định là 30 giây
-    $currentTime = time();
-    $secondsRemaining = $period - ($currentTime % $period);
-    $raw = $account['code_2fa'];
-    $secret = strtoupper(str_replace(' ', '', $raw)); // "4NDNVBKT5HABZV3ITTEYAV7OHRH5MSK6"
-    $totp = TOTP::create($secret);
-    $otp = $totp->now();
-} else {
-    $otp = "Không có mã 2FA";
-    $secondsRemaining = 9999999;
-}
-?>
-
 <div class="main-content">
     <div class="container mt-5">
         <!-- Table -->
@@ -43,7 +25,7 @@ if ($account['code_2fa'] != null) {
                                 <tr>
                                     <td><?php echo $account['email'] ?></td>
                                     <td><?php echo $account['password'] ?></td>
-                                    <td><span style="color: green"> <?php echo $otp ?></span></td>
+                                    <td><span style="color: green"> <?php echo $account['code_2fa'] ?? 'Không có mã 2FA' ?></span></td>
                                     <td><?php echo $account['code'] ?></td>
                                     <td><?php echo $account['category_id'] ?></td>
                                     <td><?php echo $account['user'] ?></td>
@@ -87,7 +69,7 @@ if ($account['code_2fa'] != null) {
                                     <tr>
                                         <td><?php echo $item['email'] ?></td>
                                         <td><?php echo $item['password'] ?></td>
-                                        <td><span style="color: green"> <?php echo $otp ?></span></td>
+                                        <td><span style="color: green"><?php echo $item['code_2fa'] == '' ? 'Không có mã 2FA' : $item['code_2fa'] ?></span></td>
                                         <td><?php echo $item['code'] ?></td>
                                         <td><?php echo $item['category_id'] ?></td>
                                         <td><?php echo $item['user'] ?></td>

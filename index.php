@@ -49,6 +49,9 @@
             case "delete":
                 $accountController->delete();
                 break;
+            case "replace":
+                $accountController->replace();
+                break;
             case "export":
                 $accountController->export();
                 break;
@@ -76,6 +79,12 @@
                 break;
             case "delete-guide-topic":
                 $guideTopicController->delete();
+                break;
+            case "exportFormAddAccount":
+                $accountController->exportFormAddAccount();
+                break;
+            case "exportFormAddGuideTopic":
+                $accountController->exportFormAddGuideTopic();
                 break;
             default:
                 $codeController->index();

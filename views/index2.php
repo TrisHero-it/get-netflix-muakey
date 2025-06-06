@@ -171,7 +171,7 @@
     $account = json_decode($accountJson, true);
     ?>
     <img style="border-radius: 100px;" src="../css/logo/muakey.png" width="100">
-    <h1>Lấy Mã 2FA</h1>
+    <h1>Thông tin tài khoản</h1>
     <div class="code hidden">
         <div class="timer recovery_email" title="Email khôi phục">Hồ sơ</div>
         <input class="copy-value" id="user" placeholder="" value="<?php echo $account['user'] ?>" readonly>

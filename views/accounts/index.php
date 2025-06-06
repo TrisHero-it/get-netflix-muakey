@@ -1,13 +1,38 @@
-<div class="container mt-5" style="overflow-x: auto;">
+<div class="mt-5" style="overflow-x: auto; margin: 0 15px">
     <div class="d-flex justify-content-between">
         <h3>
             Danh sách tài khoản
         </h3>
         <div class="d-flex" justify-content-between>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Thay thế tài khoản
+            </button>
             <a href="?act=categories" class="btn btn-success">Danh sách danh mục</a>
             <a href="?act=add" class="btn btn-primary">Thêm tài khoản</a>
             <a href="?act=add-category" class="btn btn-warning">Thêm danh mục</a>
             <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary text-light">Xuất file</a>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Thay thế tài khoản</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="?act=replace" method="post">
+                            <input type="text" name="old_email" class="form-control mt-2" placeholder="Email cũ" style="width: 438px;">
+                            <input type="text" name="new_email" class="form-control mt-2" placeholder="Email mới" style="width: 438px;">
+                            <input type="text" name="new_password" class="form-control mt-2" placeholder="Mật khẩu mới" style="width: 438px;">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary mt-2">Thay thế</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -49,10 +74,16 @@
         <tbody>
             <?php
             foreach ($accounts as $account) {
+                $AccountModel = new Account();
+                $account2 = $AccountModel->getLastestAccountReplaceByAccountId($account['id']);
             ?>
                 <tr>
                     <td><?php echo $account['shipments'] ?></td>
-                    <td><?php echo $account['email'] ?></td>
+                    <?php if ($account2 != null) { ?>
+                        <td><?php echo $account['email'] . "<br>" . $account2['email'] ?></td>
+                    <?php } else { ?>
+                        <td><?php echo $account['email'] ?></td>
+                    <?php } ?>
                     <td><?php echo $account['password'] ?></td>
                     <td><?php echo $account['code_2fa'] ?></td>
                     <td>

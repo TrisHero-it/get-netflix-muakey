@@ -52,23 +52,23 @@
         <input type="hidden" name="account_id" value="<?php echo $account['id'] ?>">
         <div class="form-group mt-3">
             <label for="email">Email</label>
-            <input type="emailstore" class="form-control" id="email" name="email" placeholder="Nhập email" value="<?php $account2 != null ? $account2['email'] : '' ?>">
+            <input type="emailstore" class="form-control" id="email" name="email" placeholder="Nhập email">
         </div>
         <div class="form-group  mt-3">
             <label for="password">Password</label>
-            <input type="text" class="form-control" id="password" name="password" placeholder="Nhập password" value="<?php $account2 != null ? $account2['password'] : '' ?>">
+            <input type="text" class="form-control" id="password" name="password" placeholder="Nhập password">
         </div>
         <div class="form-group  mt-3">
             <label for="code_2fa">Code 2FA</label>
-            <input type="text" class="form-control" id="code_2fa" name="code_2fa" placeholder="Nhập code 2FA" value="<?php $account2 != null ? $account2['code_2fa'] : '' ?>">
+            <input type="text" class="form-control" id="code_2fa" name="code_2fa" placeholder="Nhập code 2FA">
         </div>
         <div class="form-group  mt-3">
             <label for="user">Thứ tự user</label>
-            <input type="text" class="form-control" id="user" name="user" placeholder="Nhập số lượng user" value="<?php $account2 != null ? $account2['user'] : '' ?>">
+            <input type="text" class="form-control" id="user" name="user" placeholder="Nhập số lượng user">
         </div>
         <div class="form-group  mt-3">
             <label for="pin">Mã pin hồ sơ</label>
-            <input type="number" min="0" class="form-control" id="pin" name="pin" placeholder="Nhập mã PIN" value="<?php $account2 != null ? $account2['pin_code'] : '' ?>">
+            <input type="number" min="0" class="form-control" id="pin" name="pin" placeholder="Nhập mã PIN">
         </div>
 
         <div class="form-group  mt-3">
@@ -77,7 +77,7 @@
                 <?php
                 foreach ($categories as $category) {
                 ?>
-                    <option value="<?php echo $category['id'] ?>" <?php $account2 != null && $account2['category_id'] == $category['id'] ? 'selected' : '' ?>><?php echo $category['name'] ?></option>
+                    <option value="<?php echo $category['id'] ?>"><?php echo $category['name'] ?></option>
                 <?php
                 }
                 ?>
