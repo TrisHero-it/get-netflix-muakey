@@ -19,7 +19,7 @@ if ($account['code_2fa'] != null) {
 <iframe allow="clipboard-write" src="?act=index2&account=<?php echo urlencode(json_encode($account)) ?>&otp=<?php echo $otp ?>" frameborder="0" width="100%" height="700"></iframe>
 
 <?php if ($account['code_2fa'] != null) { ?>
-    <div class="text-center" style="margin-top: -25px; margin-bottom: 10px;">Mã 2FA sẽ được cập nhật sau <span id="timer"><?php echo $secondsRemaining ?></span> giây</div>
+    <div class="text-center" style="margin-top: -62px; margin-bottom: 20px;">Mã 2FA sẽ được cập nhật sau <span id="timer"><?php echo $secondsRemaining ?></span> giây</div>
 <?php } ?>
 <script>
     let seconds = <?php echo $secondsRemaining ?>;
@@ -39,7 +39,9 @@ if ($account['code_2fa'] != null) {
     }, 1000);
 </script>
 <?php if (isset($guideTopics) && $guideTopics != null) { ?>
-    <div class="main-content">
+    <div class="main-content" style="<?php if ($account['code_2fa'] == null) { ?>
+        margin-top: -93px;
+    <?php } ?>">
         <div class="container" style="padding-bottom: 100px;">
             <div class="row">
                 <div class="col">

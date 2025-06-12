@@ -58,6 +58,9 @@ class AccountController extends Account
             $data = $sheet->toArray();
             $i = 0;
             foreach ($data as $item) {
+                if ($item[0] == '' || $item[0] == null) {
+                    continue;
+                }
                 if ($i == 0) {
                     $i++;
                     continue;

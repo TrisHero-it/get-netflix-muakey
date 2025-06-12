@@ -10,7 +10,7 @@
             <a href="?act=categories" class="btn btn-success">Danh sách danh mục</a>
             <a href="?act=add" class="btn btn-primary">Thêm tài khoản</a>
             <a href="?act=add-category" class="btn btn-warning">Thêm danh mục</a>
-            <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary text-light">Xuất file</a>
+            <a data-bs-toggle="modal" data-bs-target="#exampleModal1" class="btn btn-secondary text-light">Xuất file</a>
         </div>
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form action="?act=export" method="post">
@@ -80,7 +80,7 @@
                 <tr>
                     <td><?php echo $account['shipments'] ?></td>
                     <?php if ($account2 != null) { ?>
-                        <td><?php echo $account['email'] . "<br>" . $account2['email'] ?></td>
+                        <td><?php echo $account['email'] . "<br><span style='color: green'>" . $account2['email'] . "</span>" ?></td>
                     <?php } else { ?>
                         <td><?php echo $account['email'] ?></td>
                     <?php } ?>
