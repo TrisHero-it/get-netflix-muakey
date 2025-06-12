@@ -17,7 +17,22 @@ class AccountController extends Account
 
     public function index()
     {
-        $accounts = $this->getAllAccounts();
+        $limit = 20; // số bản ghi mỗi trang
+        $page = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;
+        $offset = ($page - 1) * $limit;
+        if (isset($_GET['search']) && $_GET['search'] != '') {
+            $search = $_GET['search'];
+            $accounts = $this->AccountSearch($search);
+        } else {
+            $accounts = $this->getAccountLimit($offset, $limit);
+        }
+
+        $currentPage = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;
+        $range = 2;
+
+        $totalAccounts = $this->getCountAccount();
+        $totalAccounts['total'] = ceil($totalAccounts['total'] / $limit);
+
         $categoryController = new CategoryController();
         $categories = $categoryController->getAllCategories();
         require_once "views/accounts/index.php";
@@ -58,6 +73,9 @@ class AccountController extends Account
             $data = $sheet->toArray();
             $i = 0;
             foreach ($data as $item) {
+                if ($item[0] == '' || $item[0] == null) {
+                    continue;
+                }
                 if ($i == 0) {
                     $i++;
                     continue;

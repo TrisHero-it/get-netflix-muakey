@@ -75,4 +75,27 @@ class Account extends db
         $query = "UPDATE accounts SET email = '$email', password = '$password', code_2fa = $code2fa, category_id = '$category', user = '$user', pin_code = $pin WHERE id = $id";
         $this->getData($query, false);
     }
+
+    public function getCountAccount()
+    {
+        $query = "SELECT COUNT(*) as total FROM accounts";
+        return $this->getData($query, false);
+    }
+
+    public function getAccountLimit($offset, $limit)
+    {
+        $query = "SELECT * FROM accounts where account_id IS NULL order by id desc LIMIT $offset, $limit";
+        return $this->getData($query);
+    }
+
+    public function AccountSearch($search)
+    {
+        $search = trim($search);
+        $query = "SELECT * FROM accounts
+        WHERE email LIKE '%$search%'
+           OR code_2fa LIKE '%$search%'
+           OR code LIKE '%$search%'";
+
+        return $this->getData($query);
+    }
 }

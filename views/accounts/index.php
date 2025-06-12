@@ -4,13 +4,21 @@
             Danh sách tài khoản
         </h3>
         <div class="d-flex" justify-content-between>
+            <a href="?act=list" class="btn btn-secondary">Trang chủ</a>
+            <form method="get" style="margin-right: 32px;" id="formSearch">
+                <input type="hidden" name="act" value="list">
+                <input type="text" class="form-control" style="margin-right: 8px; height: 29px;" placeholder="Email, 2fa, link" value="<?php if (isset($_GET['search'])) {
+                                                                                                                                            echo '' . $_GET['search'] . '';
+                                                                                                                                        } ?>" name="search">
+            </form>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Thay thế tài khoản
             </button>
+
             <a href="?act=categories" class="btn btn-success">Danh sách danh mục</a>
             <a href="?act=add" class="btn btn-primary">Thêm tài khoản</a>
             <a href="?act=add-category" class="btn btn-warning">Thêm danh mục</a>
-            <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary text-light">Xuất file</a>
+            <a data-bs-toggle="modal" data-bs-target="#exampleModal1" class="btn btn-secondary text-light">Xuất file</a>
         </div>
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -35,7 +43,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form action="?act=export" method="post">
@@ -80,7 +88,7 @@
                 <tr>
                     <td><?php echo $account['shipments'] ?></td>
                     <?php if ($account2 != null) { ?>
-                        <td><?php echo $account['email'] . "<br>" . $account2['email'] ?></td>
+                        <td><?php echo $account['email'] . "<br><span style='color: green'>" . $account2['email'] . "</span>" ?></td>
                     <?php } else { ?>
                         <td><?php echo $account['email'] ?></td>
                     <?php } ?>
@@ -110,6 +118,36 @@
             ?>
         </tbody>
     </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <?php if ($currentPage > 3) {
+            ?> <li class="page-item"><a class="page-link" href="?act=list&page=1">1</a></li>
 
+            <?php
+                echo '<li class="page-item"><a class="page-link" href=""> . . .</a></li>';
+            } ?>
+            <?php
+            for ($i = max(1, $currentPage - $range); $i <= min($totalAccounts['total'] - 1, $currentPage + $range); $i++) {
+                if ($i == $currentPage) {
+                    echo '<li class="page-item active"><a class="page-link" href="?act=list&page=' . $i . '">' . $i . '</a></li>';
+                } else {
+                    echo '<li class="page-item"><a class="page-link" href="?act=list&page=' . $i . '">' . $i . '</a></li>';
+                }
+            }
+            ?>
+            <?php
+            if ($currentPage + $range < $totalAccounts['total'] - 1) {
+                echo '<li class="page-item"><a class="page-link" href=""> . . .</a></li>';
+            }
+
+            // Hiện trang cuối (nếu không trùng)
+            if ($currentPage != $totalAccounts['total']) {
+                echo '<li class="page-item"><a class="page-link" href="?act=list&page=' . $totalAccounts['total'] . '">' . $totalAccounts['total'] . '</a></li>';
+            } else {
+                echo '<li class="page-item"><a class="page-link active" href="?act=list&page=' . $totalAccounts['total'] . '">' . $totalAccounts['total'] . '</a></li>';
+            }
+            ?>
+        </ul>
+    </nav>
 
 </div>

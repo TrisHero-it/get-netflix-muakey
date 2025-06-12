@@ -15,18 +15,24 @@
 
 <body>
     <?php
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
     require_once 'controllers/CodeController.php';
     require_once 'controllers/AccountController.php';
     require_once 'controllers/CategoryController.php';
     require_once 'controllers/GuideTopicController.php';
+    require_once 'controllers/InforOrderController.php';
     require_once 'vendor/autoload.php';
     $codeController = new CodeController();
     $accountController = new AccountController();
     $categoryController = new CategoryController();
     $guideTopicController = new GuideTopicController();
+    $inforOrderController = new InforOrderController();
     $action = $_GET['act'] ?? 'index';
     $ip = $codeController->getClientIP();
-    if ($ip == '1.54.23.46' || $ip == '127.0.0.1') {
+    if ($ip == '1.54.23.126' || $ip == '127.0.0.1') {
         switch ($action) {
             case 'add':
                 $accountController->add();
@@ -86,6 +92,15 @@
             case "exportFormAddGuideTopic":
                 $accountController->exportFormAddGuideTopic();
                 break;
+            case "infor-orders":
+                $inforOrderController->index();
+                break;
+            case "add-infor-orders":
+                $inforOrderController->add();
+                break;
+            case "store-infor-orders":
+                $inforOrderController->store();
+                break;
             default:
                 $codeController->index();
                 break;
@@ -94,6 +109,12 @@
         switch ($action) {
             case "index2":
                 $codeController->index2();
+                break;
+            case "infor-orders":
+                $inforOrderController->index();
+                break;
+            case "add-infor-order":
+                $inforOrderController->add();
                 break;
             default:
                 $codeController->index();
