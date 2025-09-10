@@ -15,9 +15,6 @@
 
 <body>
     <?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
 
     require_once 'controllers/CodeController.php';
     require_once 'controllers/AccountController.php';
@@ -32,95 +29,123 @@
     $inforOrderController = new InforOrderController();
     $action = $_GET['act'] ?? 'index';
     $ip = $codeController->getClientIP();
-    if ($ip == '1.54.23.126' || $ip == '127.0.0.1') {
-        switch ($action) {
-            case 'add':
-                $accountController->add();
-                break;
-            case 'store':
-                $accountController->store();
-                break;
-            case 'list':
-                $accountController->index();
-                break;
-            case 'edit':
-                $accountController->edit();
-                break;
-            case 'show':
-                $accountController->show();
-                break;
-            case 'update':
-                $accountController->update();
-                break;
-            case "delete":
-                $accountController->delete();
-                break;
-            case "replace":
-                $accountController->replace();
-                break;
-            case "export":
-                $accountController->export();
-                break;
-            case "categories":
-                $categoryController->index();
-                break;
-            case "add-category":
-                $categoryController->add();
-                break;
-            case "store-category":
-                $categoryController->store();
-                break;
-            // Hướng dẫn
-            case "guide-topics":
-                $guideTopicController->index();
-                break;
-            case "add-guide-topic":
-                $guideTopicController->add();
-                break;
-            case "index2":
-                $codeController->index2();
-                break;
-            case "store-guide-topic":
-                $guideTopicController->store();
-                break;
-            case "delete-guide-topic":
-                $guideTopicController->delete();
-                break;
-            case "exportFormAddAccount":
-                $accountController->exportFormAddAccount();
-                break;
-            case "exportFormAddGuideTopic":
-                $accountController->exportFormAddGuideTopic();
-                break;
-            case "infor-orders":
-                $inforOrderController->index();
-                break;
-            case "add-infor-orders":
-                $inforOrderController->add();
-                break;
-            case "store-infor-orders":
-                $inforOrderController->store();
-                break;
-            default:
-                $codeController->index();
-                break;
-        }
-    } else {
-        switch ($action) {
-            case "index2":
-                $codeController->index2();
-                break;
-            case "infor-orders":
-                $inforOrderController->index();
-                break;
-            case "add-infor-order":
-                $inforOrderController->add();
-                break;
-            default:
-                $codeController->index();
-                break;
-        }
+    switch ($action) {
+        case 'add':
+            $accountController->add();
+            break;
+        case 'store':
+            $accountController->store();
+            break;
+        case 'list':
+            // Basic Auth cho act=list
+            $user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+            $pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+            if ($user !== 'admin' || $pass !== 'Muakey@@111') {
+                header('WWW-Authenticate: Basic realm="Restricted Area"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo '<h2>401 Unauthorized</h2><p>Bạn cần đăng nhập để truy cập.</p>';
+                exit;
+            }
+            $accountController->index();
+            break;
+        case 'edit':
+            $user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+            $pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+            if ($user !== 'admin' || $pass !== 'Muakey@@111') {
+                header('WWW-Authenticate: Basic realm="Restricted Area"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo '<h2>401 Unauthorized</h2><p>Bạn cần đăng nhập để truy cập.</p>';
+                exit;
+            }
+            $accountController->edit();
+            break;
+        case 'show':
+            $user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+            $pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+            if ($user !== 'admin' || $pass !== 'Muakey@@111') {
+                header('WWW-Authenticate: Basic realm="Restricted Area"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo '<h2>401 Unauthorized</h2><p>Bạn cần đăng nhập để truy cập.</p>';
+                exit;
+            }
+            $accountController->show();
+            break;
+        case 'update':
+            $accountController->update();
+            break;
+        case "delete":
+            $accountController->delete();
+            break;
+        case "replace":
+            $accountController->replace();
+            break;
+        case "export":
+            $accountController->export();
+            break;
+        case "categories":
+            $categoryController->index();
+            break;
+        case "add-category":
+            $user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+            $pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+            if ($user !== 'admin' || $pass !== 'Muakey@@111') {
+                header('WWW-Authenticate: Basic realm="Restricted Area"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo '<h2>401 Unauthorized</h2><p>Bạn cần đăng nhập để truy cập.</p>';
+                exit;
+            }
+            $categoryController->add();
+            break;
+        case "store-category":
+            $categoryController->store();
+            break;
+        // Hướng dẫn
+        case "guide-topics":
+            $guideTopicController->index();
+            break;
+        case "add-guide-topic":
+            $user = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : '';
+            $pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+            if ($user !== 'admin' || $pass !== 'Muakey@@111') {
+                header('WWW-Authenticate: Basic realm="Restricted Area"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo '<h2>401 Unauthorized</h2><p>Bạn cần đăng nhập để truy cập.</p>';
+                exit;
+            }
+            $guideTopicController->add();
+            break;
+        case "index2":
+            $codeController->index2();
+            break;
+        case "store-guide-topic":
+            $guideTopicController->store();
+            break;
+        case "delete-guide-topic":
+            $guideTopicController->delete();
+            break;
+        case "exportFormAddAccount":
+            $accountController->exportFormAddAccount();
+            break;
+        case "exportFormAddGuideTopic":
+            $accountController->exportFormAddGuideTopic();
+            break;
+        case "infor-orders":
+            $inforOrderController->index();
+            break;
+        case "add-infor-orders":
+            $inforOrderController->add();
+            break;
+        case "store-infor-orders":
+            $inforOrderController->store();
+            break;
+        case "add-infor-order":
+            $inforOrderController->add();
+            break;
+        default:
+            $codeController->index();
+            break;
     }
+
     ?>
 
 </body>
