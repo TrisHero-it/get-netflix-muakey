@@ -35,9 +35,11 @@ class Account extends db
 
     public function getAccountsByEmail($email)
     {
-        $query = "SELECT * FROM accounts WHERE email = '$email'";
+        $query = "SELECT * FROM accounts WHERE email LIKE '%$email%'";
         return $this->getData($query);
     }
+
+
 
     public function getAccountByEmailAndType($email, $type)
     {
@@ -49,6 +51,13 @@ class Account extends db
     {
         $query = "INSERT INTO accounts (email, password, code_2fa, code, category_id, user, shipments, pin_code, account_id) 
         VALUES ('$email', '$password', $code2fa , '$code', '$category', '$user', '$shipment', $pin, $account_id)";
+        $this->getData($query, false);
+    }
+
+    public function insert2($email, $password, $code2fa, $code, $category, $user, $shipment = 1, $pin = null, $account_id = null)
+    {
+        $query = "INSERT INTO accounts (email, password, code_2fa, code, category_id, user, shipments, pin_code, account_id) 
+        VALUES ('$email', '$password', $code2fa , $code, '$category', '$user', '$shipment', $pin, $account_id)";
         $this->getData($query, false);
     }
 
@@ -78,7 +87,7 @@ class Account extends db
 
     public function getCountAccount()
     {
-        $query = "SELECT COUNT(*) as total FROM accounts";
+        $query = "SELECT COUNT(*) as total FROM accounts where account_id IS NULL";
         return $this->getData($query, false);
     }
 
@@ -91,10 +100,29 @@ class Account extends db
     public function AccountSearch($search)
     {
         $search = trim($search);
+        $query = "SELECT account_id FROM accounts
+          WHERE account_id IS NOT NULL
+            AND (
+                email LIKE '%$search%'
+                OR code_2fa LIKE '%$search%'
+                OR code LIKE '%$search%'
+            )";
+
+
+        return $this->getData($query, false);
+    }
+
+    public function AccountsSearch($search)
+    {
+        $search = trim($search);
         $query = "SELECT * FROM accounts
-        WHERE email LIKE '%$search%'
-           OR code_2fa LIKE '%$search%'
-           OR code LIKE '%$search%'";
+          WHERE account_id IS NULL
+            AND (
+                email LIKE '%$search%'
+                OR code_2fa LIKE '%$search%'
+                OR code LIKE '%$search%'
+            )";
+
 
         return $this->getData($query);
     }

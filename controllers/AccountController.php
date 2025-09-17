@@ -22,7 +22,13 @@ class AccountController extends Account
         $offset = ($page - 1) * $limit;
         if (isset($_GET['search']) && $_GET['search'] != '') {
             $search = $_GET['search'];
-            $accounts = $this->AccountSearch($search);
+            $checkAccount = $this->AccountSearch($search);
+            if (isset($checkAccount['account_id'])) {
+                $originalAccount = $this->getAccountById($checkAccount['account_id']);
+                $accounts = $this->AccountsSearch($originalAccount['email']);
+            } else {
+                $accounts = $this->AccountsSearch($search);
+            }
         } else {
             $accounts = $this->getAccountLimit($offset, $limit);
         }
@@ -104,16 +110,27 @@ class AccountController extends Account
         $oldEmail = $_POST['old_email'];
         $newEmail = $_POST['new_email'];
         $newPassword = $_POST['new_password'];
-        $accounts = $this->getAccountsByEmail($oldEmail);
+        $checkAccounts = $this->getAccountsByEmail(trim($oldEmail));
+        foreach ($checkAccounts as $account) {
+
+            if ($account['code'] == null || $account['account_id'] != null) {
+                $originalAccount = $this->getAccountById($account['account_id']);
+                $accounts = $this->getAccountsByEmail($originalAccount['email']);
+            } else {
+                $accounts = $checkAccounts;
+            }
+            break;
+        }
+
         foreach ($accounts as $account) {
             $data = $account;
             $data['email'] = $newEmail;
             $data['password'] = $newPassword;
-            $this->insert(
+            $this->insert2(
                 $data['email'],
                 $data['password'],
                 $data['code_2fa'] == '' ? 'null' : "'" . $data['code_2fa'] . "'",
-                $this->randomString(),
+                'null',
                 $data['category_id'],
                 $data['user'],
                 $shipment,

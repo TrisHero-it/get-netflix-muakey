@@ -118,36 +118,46 @@
             ?>
         </tbody>
     </table>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <?php if ($currentPage > 3) {
-            ?> <li class="page-item"><a class="page-link" href="?act=list&page=1">1</a></li>
+    <?php
+    if (!isset($_GET['search'])) {
 
-            <?php
-                echo '<li class="page-item"><a class="page-link" href=""> . . .</a></li>';
-            } ?>
-            <?php
-            for ($i = max(1, $currentPage - $range); $i <= min($totalAccounts['total'] - 1, $currentPage + $range); $i++) {
-                if ($i == $currentPage) {
-                    echo '<li class="page-item active"><a class="page-link" href="?act=list&page=' . $i . '">' . $i . '</a></li>';
-                } else {
-                    echo '<li class="page-item"><a class="page-link" href="?act=list&page=' . $i . '">' . $i . '</a></li>';
+
+    ?>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <?php if ($currentPage > 3) {
+                ?> <li class="page-item"><a class="page-link" href="?act=list&page=1">1</a></li>
+
+                <?php
+                    echo '<li class="page-item"><a class="page-link" href=""> . . .</a></li>';
+                } ?>
+                <?php
+                for ($i = max(1, $currentPage - $range); $i <= min($totalAccounts['total'] - 1, $currentPage + $range); $i++) {
+                    if ($i == $currentPage) {
+                        echo '<li class="page-item active"><a class="page-link" href="?act=list&page=' . $i . '">' . $i . '</a></li>';
+                    } else {
+                        echo '<li class="page-item"><a class="page-link" href="?act=list&page=' . $i . '">' . $i . '</a></li>';
+                    }
                 }
-            }
-            ?>
-            <?php
-            if ($currentPage + $range < $totalAccounts['total'] - 1) {
-                echo '<li class="page-item"><a class="page-link" href=""> . . .</a></li>';
-            }
+                ?>
+                <?php
+                if ($currentPage + $range < $totalAccounts['total'] - 1) {
+                    echo '<li class="page-item"><a class="page-link" href=""> . . .</a></li>';
+                }
 
-            // Hiện trang cuối (nếu không trùng)
-            if ($currentPage != $totalAccounts['total']) {
-                echo '<li class="page-item"><a class="page-link" href="?act=list&page=' . $totalAccounts['total'] . '">' . $totalAccounts['total'] . '</a></li>';
-            } else {
-                echo '<li class="page-item"><a class="page-link active" href="?act=list&page=' . $totalAccounts['total'] . '">' . $totalAccounts['total'] . '</a></li>';
-            }
-            ?>
-        </ul>
-    </nav>
+                // Hiện trang cuối (nếu không trùng)
+                if ($currentPage != $totalAccounts['total']) {
+                    echo '<li class="page-item"><a class="page-link" href="?act=list&page=' . $totalAccounts['total'] . '">' . $totalAccounts['total'] . '</a></li>';
+                } else {
+                    echo '<li class="page-item"><a class="page-link active" href="?act=list&page=' . $totalAccounts['total'] . '">' . $totalAccounts['total'] . '</a></li>';
+                }
+                ?>
+            </ul>
+        </nav>
+
+    <?php
+    }
+    ?>
 
 </div>
