@@ -1,4 +1,23 @@
 <div class="mt-5" style="overflow-x: auto; margin: 0 15px">
+    <!-- Success/Error Messages -->
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <?php echo $_SESSION['success_message'];
+            unset($_SESSION['success_message']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <?php echo $_SESSION['error_message'];
+            unset($_SESSION['error_message']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <div class="d-flex justify-content-between">
         <h3>
             Danh sách tài khoản
@@ -64,9 +83,26 @@
         </div>
 
     </div>
+    <!-- Bulk Actions -->
+    <div class="mb-3">
+        <button type="button" class="btn btn-danger" id="deleteSelectedBtn" disabled>
+            <i class="fas fa-trash me-1"></i>Xóa đã chọn
+        </button>
+        <button type="button" class="btn btn-info" id="copySelectedBtn" disabled>
+            <i class="fas fa-copy me-1"></i>Copy đã chọn
+        </button>
+        <button type="button" class="btn btn-outline-secondary" id="deselectAllBtn">
+            <i class="fas fa-square me-1"></i>Bỏ chọn tất cả
+        </button>
+        <span class="text-muted ms-3" id="selectedCount">0 tài khoản đã chọn</span>
+    </div>
+
     <table class="table mt-3">
         <thead>
             <tr>
+                <th scope="col" class="text-center" style="width: 50px;">
+                    <input type="checkbox" id="selectAllCheckbox" class="form-check-input">
+                </th>
                 <th scope="col">Lô hàng</th>
                 <th scope="col">Email</th>
                 <th scope="col">Password</th>
@@ -86,6 +122,9 @@
                 $account2 = $AccountModel->getLastestAccountReplaceByAccountId($account['id']);
             ?>
                 <tr>
+                    <td class="text-center">
+                        <input type="checkbox" class="form-check-input account-checkbox" value="<?php echo $account['id'] ?>">
+                    </td>
                     <td><?php echo $account['shipments'] ?></td>
                     <?php if ($account2 != null) { ?>
                         <td><?php echo $account['email'] . "<br><span style='color: green'>" . $account2['email'] . "</span>" ?></td>
@@ -95,7 +134,12 @@
                     <td><?php echo $account['password'] ?></td>
                     <td><?php echo $account['code_2fa'] ?></td>
                     <td>
-                        <a href="<?php echo base_url . "/?id=" . $account['code'] ?>" target="_blank"><?php echo base_url . "/?id=" . $account['code'] ?></a>
+                        <a href="<?php echo base_url . "/?id=" . $account['code'] ?>"
+                            target="_blank"
+                            class="account-link"
+                            data-link="<?php echo base_url . "/?id=" . $account['code'] ?>">
+                            <?php echo base_url . "/?id=" . $account['code'] ?>
+                        </a>
                     </td>
                     <?php
                     foreach ($categories as $category) {
@@ -161,3 +205,270 @@
     ?>
 
 </div>
+
+<!-- JavaScript for bulk actions -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        const accountCheckboxes = document.querySelectorAll('.account-checkbox');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        const copySelectedBtn = document.getElementById('copySelectedBtn');
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const deselectAllBtn = document.getElementById('deselectAllBtn');
+        const selectedCount = document.getElementById('selectedCount');
+
+        // Function to update selected count
+        function updateSelectedCount() {
+            const checkedBoxes = document.querySelectorAll('.account-checkbox:checked');
+            const count = checkedBoxes.length;
+            selectedCount.textContent = count + ' tài khoản đã chọn';
+            deleteSelectedBtn.disabled = count === 0;
+            copySelectedBtn.disabled = count === 0;
+        }
+
+        // Select all checkbox functionality
+        selectAllCheckbox.addEventListener('change', function() {
+            accountCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedCount();
+        });
+
+        // Individual checkbox functionality
+        accountCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateSelectedCount();
+
+                // Update select all checkbox state
+                const checkedBoxes = document.querySelectorAll('.account-checkbox:checked');
+                if (checkedBoxes.length === 0) {
+                    selectAllCheckbox.indeterminate = false;
+                    selectAllCheckbox.checked = false;
+                } else if (checkedBoxes.length === accountCheckboxes.length) {
+                    selectAllCheckbox.indeterminate = false;
+                    selectAllCheckbox.checked = true;
+                } else {
+                    selectAllCheckbox.indeterminate = true;
+                }
+            });
+        });
+
+
+        // Deselect all button
+        deselectAllBtn.addEventListener('click', function() {
+            accountCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+            updateSelectedCount();
+        });
+
+        // Copy selected button
+        copySelectedBtn.addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('.account-checkbox:checked');
+            if (checkedBoxes.length === 0) {
+                alert('Vui lòng chọn ít nhất một tài khoản để copy!');
+                return;
+            }
+
+            // Collect selected account IDs
+            const selectedIds = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+            console.log('Selected IDs:', selectedIds);
+
+            // Get all account links
+            const allAccountLinks = document.querySelectorAll('.account-link');
+            const selectedLinks = [];
+
+            allAccountLinks.forEach(link => {
+                const row = link.closest('tr');
+                const checkbox = row.querySelector('.account-checkbox');
+                if (checkbox && selectedIds.includes(checkbox.value)) {
+                    const linkUrl = link.getAttribute('data-link') || link.href;
+                    selectedLinks.push(linkUrl);
+                    console.log('Found link:', linkUrl);
+                }
+            });
+
+            console.log('Selected links:', selectedLinks);
+
+            if (selectedLinks.length === 0) {
+                alert('Không tìm thấy link nào để copy!');
+                return;
+            }
+
+            // Join links with newlines
+            const linksText = selectedLinks.join('\n');
+            console.log('Text to copy:', linksText);
+
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(linksText).then(function() {
+                    // Success
+                    const originalText = copySelectedBtn.innerHTML;
+                    copySelectedBtn.innerHTML = '<i class="fas fa-check me-1"></i>Đã copy!';
+                    copySelectedBtn.classList.remove('btn-info');
+                    copySelectedBtn.classList.add('btn-success');
+
+                    setTimeout(() => {
+                        copySelectedBtn.innerHTML = originalText;
+                        copySelectedBtn.classList.remove('btn-success');
+                        copySelectedBtn.classList.add('btn-info');
+                    }, 2000);
+
+                    showNotification(`Đã copy ${selectedLinks.length} link vào clipboard!`, 'success');
+                }).catch(function(err) {
+                    console.error('Clipboard API failed:', err);
+                    fallbackCopy(linksText, selectedLinks.length);
+                });
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                fallbackCopy(linksText, selectedLinks.length);
+            }
+        });
+
+        // Fallback copy function
+        function fallbackCopy(text, count) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    const originalText = copySelectedBtn.innerHTML;
+                    copySelectedBtn.innerHTML = '<i class="fas fa-check me-1"></i>Đã copy!';
+                    copySelectedBtn.classList.remove('btn-info');
+                    copySelectedBtn.classList.add('btn-success');
+
+                    setTimeout(() => {
+                        copySelectedBtn.innerHTML = originalText;
+                        copySelectedBtn.classList.remove('btn-success');
+                        copySelectedBtn.classList.add('btn-info');
+                    }, 2000);
+
+                    showNotification(`Đã copy ${count} link vào clipboard!`, 'success');
+                } else {
+                    throw new Error('execCommand failed');
+                }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                showNotification('Không thể copy vào clipboard. Vui lòng thử lại!', 'error');
+
+                // Show text in a modal as last resort
+                showTextModal(text, count);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        // Show text in modal as last resort
+        function showTextModal(text, count) {
+            const modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                 <div class="modal-dialog modal-lg">
+                     <div class="modal-content">
+                         <div class="modal-header">
+                             <h5 class="modal-title">Copy ${count} link (${count} links)</h5>
+                             <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                         </div>
+                         <div class="modal-body">
+                             <p>Không thể copy tự động. Vui lòng chọn và copy text bên dưới:</p>
+                             <textarea class="form-control" rows="10" readonly>${text}</textarea>
+                         </div>
+                         <div class="modal-footer">
+                             <button type="button" class="btn btn-primary" onclick="this.closest('.modal').querySelector('textarea').select(); document.execCommand('copy'); showNotification('Đã copy!', 'success');">Copy</button>
+                             <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Đóng</button>
+                         </div>
+                     </div>
+                 </div>
+             `;
+            document.body.appendChild(modal);
+        }
+
+        // Delete selected button
+        deleteSelectedBtn.addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('.account-checkbox:checked');
+            if (checkedBoxes.length === 0) {
+                alert('Vui lòng chọn ít nhất một tài khoản để xóa!');
+                return;
+            }
+
+            const confirmMessage = `Bạn có chắc chắn muốn xóa ${checkedBoxes.length} tài khoản đã chọn không?\n\nHành động này không thể hoàn tác!`;
+
+            if (confirm(confirmMessage)) {
+                // Collect selected IDs
+                const selectedIds = Array.from(checkedBoxes).map(checkbox => checkbox.value);
+
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '?act=bulk-delete';
+
+                // Add CSRF token if needed
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = '<?php echo isset($_SESSION['csrf_token']) ? $_SESSION['csrf_token'] : ''; ?>';
+                form.appendChild(csrfInput);
+
+                // Add selected IDs
+                selectedIds.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'selected_ids[]';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+        // Initialize count
+        updateSelectedCount();
+    });
+
+    // Notification function
+    function showNotification(message, type = 'info') {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.custom-notification');
+        existingNotifications.forEach(notification => notification.remove());
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `custom-notification alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+        notification.style.cssText = `
+             position: fixed;
+             top: 20px;
+             right: 20px;
+             z-index: 9999;
+             min-width: 300px;
+             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+         `;
+
+        notification.innerHTML = `
+             <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+             ${message}
+             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+         `;
+
+        // Add to page
+        document.body.appendChild(notification);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+</script>

@@ -175,6 +175,50 @@ class AccountController extends Account
         header("Location: ?act=list");
     }
 
+    public function bulkDelete()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_ids'])) {
+            $selectedIds = $_POST['selected_ids'];
+
+            // Validate that we have IDs to delete
+            if (empty($selectedIds) || !is_array($selectedIds)) {
+                $_SESSION['error_message'] = 'Không có tài khoản nào được chọn để xóa!';
+                header("Location: ?act=list");
+                exit;
+            }
+
+            // Validate each ID is numeric
+            $validIds = array_filter($selectedIds, function ($id) {
+                return is_numeric($id) && $id > 0;
+            });
+
+            if (empty($validIds)) {
+                $_SESSION['error_message'] = 'Danh sách ID không hợp lệ!';
+                header("Location: ?act=list");
+                exit;
+            }
+
+            // Delete each account
+            $deletedCount = 0;
+            foreach ($validIds as $id) {
+                if ($this->deleteAccount($id)) {
+                    $deletedCount++;
+                }
+            }
+
+            if ($deletedCount > 0) {
+                $_SESSION['success_message'] = "Đã xóa thành công {$deletedCount} tài khoản!";
+            } else {
+                $_SESSION['error_message'] = 'Không thể xóa tài khoản nào!';
+            }
+        } else {
+            $_SESSION['error_message'] = 'Yêu cầu không hợp lệ!';
+        }
+
+        header("Location: ?act=list");
+        exit;
+    }
+
     function randomString($length = 8)
     {
         $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // 26 chữ + 10 số = 36 ký tự
@@ -218,7 +262,6 @@ class AccountController extends Account
         $sheet->setCellValue('H1', 'Thời gian');
         $sheet->setCellValue('I1', 'Lô hàng');
         $sheet->setCellValue('J1', 'Mã Pin');
-
 
         $row = 2;
         while ($data = $result->fetch_assoc()) {
