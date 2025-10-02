@@ -37,6 +37,38 @@
 
         .copy {
             min-width: 103px;
+            position: relative;
+        }
+
+        .copy-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            position: relative;
+        }
+
+        .copy-icon::before,
+        .copy-icon::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 14px;
+            border: 1px solid #333;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .copy-icon::before {
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .copy-icon::after {
+            top: 2px;
+            left: 2px;
+            z-index: 1;
+            background: #f0f0f0;
         }
 
         .code> :first-child {
@@ -172,58 +204,162 @@
     ?>
     <img style="border-radius: 100px;" src="../css/logo/muakey.png" width="100">
     <h1>Thông tin tài khoản</h1>
-    <div class="code hidden">
-        <div class="timer recovery_email" title="Email khôi phục">Hồ sơ</div>
-        <input class="copy-value" id="user" placeholder="" value="<?php echo $account['user'] ?>" readonly>
-        <button class="copy" type="button" onclick="copyToClipboard('user', this)">Sao chép</button>
+    <div class="code hidden" style="position: relative; cursor: pointer;">
+        <div class="timer recovery_email" title="Email khôi phục" style="width: 105px;">Hồ sơ</div>
+        <input class="copy-value" style="cursor: pointer;" id="user" placeholder="" value="<?php echo $account['user'] ?>" readonly>
     </div>
     <?php if ($account['pin_code'] != null) { ?>
-        <div class="code">
-            <div class="timer" title="Mã 2FA">Mã Pin</div>
-            <input class="copy-value" id="code" placeholder="" value="<?php echo $account['pin_code'] ?>" readonly>
-            <button class="copy" type="button" onclick="copyToClipboard('code', this)">Sao chép</button>
+        <div class="code" style="position: relative; cursor: pointer;" onclick="copyToClipboard('code', this)">
+            <div class="timer" title="Mã 2FA" style="width: 105px;">Mã Pin</div>
+            <input class="copy-value" style="cursor: pointer;" id="code" placeholder="" value="<?php echo $account['pin_code'] ?>" readonly>
+            <span class="copy-icon" style="position: absolute; right: 20px; top: 16px; width: 10px; height: 10px;"></span>
         </div>
     <?php } ?>
-    <div class="code hidden">
-        <div class="timer email" title="Email">Email</div>
-        <input class="copy-value" id="emailInput" placeholder="" value="<?php echo $account['email'] ?>" readonly>
-        <button class="copy" type="button" onclick="copyToClipboard('emailInput', this)">Sao chép</button>
+    <div class="code hidden" style="position: relative; cursor: pointer;" onclick="copyToClipboard('emailInput', this)">
+        <div class="timer email" title="Email" style="width: 105px;">Email</div>
+        <input class="copy-value" style="cursor: pointer;" id="emailInput" placeholder="" value="<?php echo $account['email'] ?>" readonly>
+        <span class="copy-icon" style="position: absolute; right: 20px; top: 16px; width: 10px; height: 10px;"></span>
     </div>
-    <div class="code hidden">
-        <div class="timer pass" title="Pass">Pass</div>
-        <input class="copy-value" id="passInput" placeholder="" value="<?php echo $account['password'] ?>" readonly>
-        <button class="copy" type="button" onclick="copyToClipboard('passInput', this)">Sao chép</button>
+    <div class="code hidden" style="position: relative; cursor: pointer;" onclick="copyToClipboard('passInput', this)">
+        <div class="timer pass" title="Pass" style="width: 105px;">Pass</div>
+        <input class="copy-value" style="cursor: pointer;" id="passInput" placeholder="" value="<?php echo $account['password'] ?>" readonly>
+        <span class="copy-icon" style="position: absolute; right: 20px; top: 16px; width: 10px; height: 10px;"></span>
     </div>
-    <div class="code hidden">
-        <div class="timer pass" title="Loại tài khoản">Loại tài khoản</div>
-        <input class="copy-value" id="category_name" placeholder="" value="<?php echo $account['name'] ?>" readonly>
-        <button class="copy" type="button" onclick="copyToClipboard('category_name', this)">Sao chép</button>
+    <div class="code hidden" style="position: relative; cursor: pointer;">
+        <div class="timer pass" title="Loại tài khoản" style="width: 105px;">Loại</div>
+        <input class="copy-value" style="cursor: pointer;" id="category_name" placeholder="" value="<?php echo $account['name'] ?>" readonly>
     </div>
     <?php
     if ($account['code_2fa'] != null) {
-    ?>
-        <div class="code">
-            <div class="timer" title="Mã 2FA">Mã 2FA</div>
-            <input class="text-red copy-value" id="code2fa" placeholder="" value="<?php echo $_GET['otp'] ?>" readonly>
-            <button class="copy" type="button" onclick="copyToClipboard('code2fa', this)">Sao chép</button>
+    ?> <div class="" style="color:rgb(45, 185, 78);" title="Mã 2FA">Mã Authenticator / Mã 1 lần</div>
+
+        <div class="code" style="position: relative; cursor: pointer; height: 50px;" onclick="copyToClipboard('code2fa', this)">
+            <input class="text-red copy-value" style="cursor: pointer;" id="code2fa" placeholder="" value="<?php echo $_GET['otp'] ?>" readonly>
+            <span class="copy-icon" style="position: absolute; right: 20px; top: 15px; width: 10px; height: 10px;"></span>
         </div>
     <?php } ?>
 
     </div>
     <script>
+        function showNotification(message, type = 'success') {
+            console.log('showNotification called:', message, type); // Debug log
+
+            // Tạo container nếu chưa có
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                `;
+                document.body.appendChild(container);
+            }
+
+            // Tạo toast element
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                min-width: 250px;
+                margin-bottom: 10px;
+                padding: 15px 20px;
+                border-radius: 4px;
+                color: white;
+                font-family: 'Arial', sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                opacity: 1;
+                transform: translateX(0);
+                transition: all 0.3s ease-out;
+            `;
+
+            // Áp dụng màu sắc theo type
+            if (type === 'success') {
+                toast.style.backgroundColor = '#d4edda';
+                toast.style.color = '#155724';
+                toast.style.border = '1px solid #c3e6cb';
+            } else if (type === 'error') {
+                toast.style.backgroundColor = '#f8d7da';
+                toast.style.color = '#721c24';
+                toast.style.border = '1px solid #f5c6cb';
+            }
+
+            // Tạo nội dung toast
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'toast-message';
+            messageDiv.textContent = message;
+            messageDiv.style.marginRight = '10px';
+            messageDiv.style.flex = '1';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'toast-close';
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = `
+                background: none;
+                border: none;
+                color: inherit;
+                font-size: 18px;
+                cursor: pointer;
+                opacity: 0.8;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            closeBtn.onclick = () => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 300);
+            };
+
+            toast.appendChild(messageDiv);
+            toast.appendChild(closeBtn);
+            container.appendChild(toast);
+
+            // Animation slide in
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
+            }, 10);
+
+            // Tự động xóa sau 4 giây
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, 4000);
+        }
+
         function copyToClipboard(id, btn) {
             const text = document.getElementById(id).value;
 
             // Kiểm tra Clipboard API
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
-                    btn.innerHTML = "✓";
-                    setTimeout(() => {
-                        btn.innerHTML = "Sao chép";
-                    }, 3000);
+                    if (window.innerWidth <= 768) {
+                        alert("Đã copy: " + text);
+                    } else {
+                        showNotification(`Đã copy ${text} vào clipboard!`, 'success');
+                    }
                 }).catch(err => {
                     console.error("Lỗi sao chép:", err);
-                    alert("Không thể sao chép.");
+                    showNotification("Không thể sao chép.", 'error');
                 });
             } else {
                 // Fallback cho trình duyệt cũ
@@ -233,10 +369,11 @@
                 temp.select();
                 document.execCommand("copy");
                 document.body.removeChild(temp);
-                btn.innerHTML = "✓";
-                setTimeout(() => {
-                    btn.innerHTML = "Sao chép";
-                }, 3000);
+                if (window.innerWidth <= 600) {
+                    alert("Đã copy: " + text);
+                } else {
+                    showNotification(`Đã copy ${text} vào clipboard!`, 'success');
+                }
             }
         }
     </script>
