@@ -18,10 +18,10 @@ if ($account['code_2fa'] != null) {
 <?php if ($account['code_2fa'] == null) { ?>
     <div style="margin-top: 50px;">
     <?php } ?>
-    <iframe allow="clipboard-write" src="?act=index2&account=<?php echo urlencode(json_encode($account)) ?>&otp=<?php echo $otp ?>" frameborder="0" width="100%" <?php if ($account['code_2fa'] != null) { ?> height="700" <?php } else { ?> height="500" <?php } ?>></iframe>
+    <iframe allow="clipboard-write" src="?act=index2&account=<?php echo urlencode(json_encode($account)) ?>&otp=<?php echo $otp ?>" frameborder="0" width="100%" <?php if ($account['code_2fa'] != null) { ?> height="700" <?php } else { ?> height="600" <?php } ?>></iframe>
 
     <?php if ($account['code_2fa'] != null) { ?>
-        <div class="text-center" style="margin-top: -62px; margin-bottom: 20px;">Mã 2FA sẽ được cập nhật sau <span id="timer" style="color: red;"><?php echo $secondsRemaining ?></span> giây</div>
+        <div class="text-center" style="margin-top: -15px; margin-bottom: 20px;">Mã 2FA sẽ được cập nhật sau <span id="timer" style="color: red;"><?php echo $secondsRemaining ?></span> giây</div>
     <?php } ?>
     <script>
         let seconds = <?php echo $secondsRemaining ?>;

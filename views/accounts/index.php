@@ -82,6 +82,26 @@
             </div>
         </div>
 
+        <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="copyShipmentForm" onsubmit="return false;">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Điền lô muốn copy</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalCopyShipment"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="number" id="shipmentInput" name="shipments" class="form-control" placeholder="Nhập lô hàng" style="width: 438px;" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" id="copyShipmentLinksBtn" class="btn btn-primary">Copy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
     <!-- Bulk Actions -->
     <div class="mb-3">
@@ -95,6 +115,10 @@
             <i class="fas fa-square me-1"></i>Bỏ chọn tất cả
         </button>
         <span class="text-muted ms-3" id="selectedCount">0 tài khoản đã chọn</span>
+
+        <button type="button" style="margin-left: 30px;" id="copyShipmentBtn" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+            <i class="fas fa-copy me-1"></i>Copy theo lô
+        </button>
     </div>
 
     <table class="table mt-3">
@@ -137,6 +161,7 @@
                         <a href="<?php echo base_url . "/?id=" . $account['code'] ?>"
                             target="_blank"
                             class="account-link"
+                            data-shipment="<?php echo $account['shipments'] ?>"
                             data-link="<?php echo base_url . "/?id=" . $account['code'] ?>">
                             <?php echo base_url . "/?id=" . $account['code'] ?>
                         </a>
@@ -216,6 +241,8 @@
         const selectAllBtn = document.getElementById('selectAllBtn');
         const deselectAllBtn = document.getElementById('deselectAllBtn');
         const selectedCount = document.getElementById('selectedCount');
+        const copyShipmentBtn = document.getElementById('copyShipmentBtn');
+        const copyShipmentLinksBtn = document.getElementById('copyShipmentLinksBtn');
 
         // Function to update selected count
         function updateSelectedCount() {
@@ -286,11 +313,8 @@
                 if (checkbox && selectedIds.includes(checkbox.value)) {
                     const linkUrl = link.getAttribute('data-link') || link.href;
                     selectedLinks.push(linkUrl);
-                    console.log('Found link:', linkUrl);
                 }
             });
-
-            console.log('Selected links:', selectedLinks);
 
             if (selectedLinks.length === 0) {
                 alert('Không tìm thấy link nào để copy!');
@@ -340,6 +364,7 @@
 
             try {
                 const successful = document.execCommand('copy');
+
                 if (successful) {
                     const originalText = copySelectedBtn.innerHTML;
                     copySelectedBtn.innerHTML = '<i class="fas fa-check me-1"></i>Đã copy!';
@@ -432,6 +457,136 @@
                 form.submit();
             }
         });
+
+        copyShipmentLinksBtn.addEventListener('click', function() {
+            document.getElementById('closeModalCopyShipment').click();
+            const shipmentInput = document.getElementById('shipmentInput');
+
+            if (!shipmentInput) {
+                alert('Lỗi: Không tìm thấy ô nhập lô hàng!');
+                return;
+            }
+
+            const shipmentNumber = shipmentInput.value.trim();
+
+            if (!shipmentNumber) {
+                alert('Vui lòng nhập số lô hàng!');
+                shipmentInput.focus();
+                return;
+            }
+
+
+            // Tìm tất cả các link có data-shipment trùng với số lô
+            const allAccountLinks = document.querySelectorAll('.account-link');
+            const matchingLinks = [];
+
+            allAccountLinks.forEach(link => {
+                const linkShipment = link.getAttribute('data-shipment');
+                if (linkShipment && linkShipment.toString() === shipmentNumber.toString()) {
+                    const linkUrl = link.getAttribute('data-link') || link.href;
+                    matchingLinks.push(linkUrl);
+                }
+            });
+
+            if (matchingLinks.length === 0) {
+                showNotification(`Không tìm thấy link nào cho lô hàng ${shipmentNumber}!`, 'error');
+                return;
+            }
+
+            // Join links with newlines
+            const linksText = matchingLinks.join('\n');
+            console.log('Text to copy:', linksText);
+
+            fallbackCopy(linksText, matchingLinks.length);
+        });
+
+
+        // Function to close modal and reset input
+        function closeModalAndReset(shipmentInput) {
+            const modalElement = document.getElementById('exampleModal2');
+            if (modalElement) {
+                // Thử dùng Bootstrap 5
+                if (typeof bootstrap !== 'undefined') {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    } else {
+                        // Nếu chưa có instance, tạo mới và ẩn
+                        const bsModal = new bootstrap.Modal(modalElement);
+                        bsModal.hide();
+                    }
+                } else {
+                    // Fallback: trigger close button
+                    const closeBtn = modalElement.querySelector('[data-bs-dismiss="modal"]');
+                    if (closeBtn) {
+                        closeBtn.click();
+                    }
+                }
+            }
+
+            // Reset input
+            if (shipmentInput) {
+                shipmentInput.value = '';
+            }
+        }
+
+        // Fallback copy function for shipment - giống như nút "Copy đã chọn"
+        function fallbackCopyShipment(text, count, shipmentNumber, shipmentInput) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification(`Đã copy ${count} link của lô ${shipmentNumber} vào clipboard!`, 'success');
+
+                    // Đóng modal
+                    closeModalAndReset(shipmentInput);
+                } else {
+                    throw new Error('execCommand failed');
+                }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                showNotification('Không thể copy vào clipboard. Vui lòng thử lại!', 'error');
+
+                // Show text in a modal as last resort
+                showTextModal(text, count, shipmentNumber);
+            }
+
+            document.body.removeChild(textArea);
+        }
+
+        // Show text in modal as last resort (for shipment)
+        function showTextModal(text, count, shipmentNumber) {
+            const modal = document.createElement('div');
+            modal.className = 'modal fade show';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                 <div class="modal-dialog modal-lg">
+                     <div class="modal-content">
+                         <div class="modal-header">
+                             <h5 class="modal-title">Copy ${count} link của lô ${shipmentNumber}</h5>
+                             <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                         </div>
+                         <div class="modal-body">
+                             <p>Không thể copy tự động. Vui lòng chọn và copy text bên dưới:</p>
+                             <textarea class="form-control" rows="10" readonly>${text}</textarea>
+                         </div>
+                         <div class="modal-footer">
+                             <button type="button" class="btn btn-primary" onclick="this.closest('.modal').querySelector('textarea').select(); document.execCommand('copy'); showNotification('Đã copy!', 'success');">Copy</button>
+                             <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Đóng</button>
+                         </div>
+                     </div>
+                 </div>
+             `;
+            document.body.appendChild(modal);
+        }
 
         // Initialize count
         updateSelectedCount();

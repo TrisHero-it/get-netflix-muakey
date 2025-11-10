@@ -204,6 +204,14 @@
     ?>
     <img style="border-radius: 100px;" src="../css/logo/muakey.png" width="100">
     <h1>Thông tin tài khoản</h1>
+    <?php
+    if ($account['name'] == "Netflix") {
+    ?>
+        <h4>Vui lòng <span style="color: red;">không</span> sửa đổi thông tin tài khoản <br> (nếu vi phạm sẽ <span style="color:red">không được bảo hành</span>)</h4>
+    <?php
+    }
+
+    ?>
     <div class="code hidden" style="position: relative; cursor: pointer;">
         <div class="timer recovery_email" title="Email khôi phục" style="width: 105px;">Hồ sơ</div>
         <input class="copy-value" style="cursor: pointer;" id="user" placeholder="" value="<?php echo $account['user'] ?>" readonly>
