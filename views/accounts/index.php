@@ -48,10 +48,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="?act=replace" method="post">
-                            <input type="text" name="old_email" class="form-control mt-2" placeholder="Email cũ" style="width: 438px;">
-                            <input type="text" name="new_email" class="form-control mt-2" placeholder="Email mới" style="width: 438px;">
-                            <input type="text" name="new_password" class="form-control mt-2" placeholder="Mật khẩu mới" style="width: 438px;">
+                        <form action="?act=replace" method="post" id="replaceAccountForm">
+                            <input type="text" name="old_email" class="form-control mt-2" placeholder="Email cũ" style="width: 438px;" required>
+                            <input type="text" name="new_email" class="form-control mt-2" placeholder="Email mới" style="width: 438px;" required>
+                            <input type="text" name="new_password" class="form-control mt-2" placeholder="Mật khẩu mới" style="width: 438px;" required>
+                            <input type="text" name="new_2fa" id="new_2fa" class="form-control mt-2" placeholder="Token 2fa mới" style="width: 438px;" pattern="^[A-Z2-7]{32}$" title="Mã 2FA phải gồm 32 ký tự, in hoa, chỉ gồm A-Z và số 2-7">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -61,6 +62,25 @@
                 </div>
             </div>
         </div>
+        <script>
+            // Validate new_2fa input on submit: must be 32 chars, only A-Z and 2-7 or empty
+            document.addEventListener('DOMContentLoaded', function() {
+                var form = document.getElementById('replaceAccountForm');
+                form.addEventListener('submit', function(e) {
+                    var new2faInput = document.getElementById('new_2fa');
+                    var val = new2faInput.value.trim();
+                    // Allow empty or must match 32 chars A-Z, 2-7
+                    if (val.length > 0) {
+                        var regex = /^[A-Z2-7]{32}$/;
+                        if (!regex.test(val)) {
+                            alert('Mã 2FA phải đúng định dạng (32 ký tự, chỉ ký tự in hoa A-Z và số 2-7, ví dụ: 74RDTZVPVPHHKAOU7W3TD5MH4E3TO2IF)');
+                            new2faInput.focus();
+                            e.preventDefault();
+                        }
+                    }
+                });
+            });
+        </script>
 
         <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -135,7 +155,8 @@
                 <th scope="col">Thể loại</th>
                 <th scope="col">User</th>
                 <th scope="col">Mã pin</th>
-                <th scope="col">Thời gian</th>
+                <th scope="col">Ngày tạo</th>
+                <th scope="col">Ngày hết hạn</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -176,6 +197,7 @@
                     <td><?php echo $account['user'] ?></td>
                     <td><?php echo $account['pin_code'] ?? 'Không có' ?></td>
                     <td><?php echo $account['created_at'] ?></td>
+                    <td><?php echo $account['expired_at'] ?? "Không có" ?></td>
                     <td>
                         <a href="?act=show&id=<?php echo $account['id'] ?>" class="btn btn-info">Show</a>
                         <a href="?act=edit&id=<?php echo $account['id'] ?>" class="btn btn-warning">Edit</a>
@@ -188,11 +210,8 @@
         </tbody>
     </table>
     <?php
-    if (!isset($_GET['search'])) {
-
-
+    if (!isset($_GET['search'])) {  
     ?>
-
         <nav aria-label="Page navigation example">
             <ul class="pagination">
                 <?php if ($currentPage > 3) {

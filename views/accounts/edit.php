@@ -24,6 +24,11 @@
             <input type="number" min="0" class="form-control" id="pin" name="pin" placeholder="Nhập mã PIN" value="<?php echo $account['pin_code'] ?>">
         </div>
 
+        <div class="form-group mt-3">
+            <label for="expired_at">Ngày hết hạn</label>
+            <input type="date" class="form-control" id="expired_at" name="expired_at" value="<?php echo $account['expired_at'] ?? '' ?>">
+        </div>
+
         <div class="form-group  mt-3">
             <label for="category_id">Thể loại</label>
             <select class="form-control" id="category_id" name="category_id">
@@ -69,6 +74,11 @@
         <div class="form-group  mt-3">
             <label for="pin">Mã pin hồ sơ</label>
             <input type="number" min="0" class="form-control" id="pin" name="pin" placeholder="Nhập mã PIN">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="expired_at">Ngày hết hạn</label>
+            <input type="date" class="form-control" id="expired_at" name="expired_at">
         </div>
 
         <div class="form-group  mt-3">

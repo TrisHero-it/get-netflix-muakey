@@ -24,6 +24,13 @@
             <input type="number" min="0" class="form-control" id="pin" name="pin" placeholder="Nhập mã PIN">
         </div>
 
+        <div class="form-group mt-3">
+            <label for="expired_at_days">Hết hạn sau (ngày)</label>
+            <input type="number" min="0" class="form-control" id="expired_at_days" name="expired_at_days" value="30"
+                placeholder="Nhập số ngày, ví dụ 30 sẽ cộng thêm 30 ngày">
+            <input type="hidden" id="expired_at" name="expired_at">
+        </div>
+
         <div class="form-group  mt-3">
             <label for="category_id">Thể loại</label>
             <select class="form-control" id="category_id" name="category_id">
@@ -46,3 +53,27 @@
         <button type="submit" class="btn btn-primary mt-3">Thêm</button>
     </form>
 </div>
+
+<script>
+    // Tính expired_at dựa trên số ngày nhập
+    (function() {
+        const daysInput = document.getElementById('expired_at_days');
+        const expiredInput = document.getElementById('expired_at');
+
+        function updateExpiredAt() {
+            const days = parseInt(daysInput.value || '0', 10);
+            const now = new Date();
+            now.setDate(now.getDate() + (isNaN(days) ? 0 : days));
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            expiredInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Khởi tạo khi load
+        updateExpiredAt();
+
+        // Cập nhật khi người dùng đổi số ngày
+        daysInput.addEventListener('input', updateExpiredAt);
+    })();
+</script>

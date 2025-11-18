@@ -199,6 +199,9 @@
 
 <body>
     <?php
+
+    use OTPHP\TOTP;
+
     $accountJson = $_GET['account'] ?? '';
     $account = json_decode($accountJson, true);
     ?>
@@ -225,12 +228,12 @@
     <?php } ?>
     <div class="code hidden" style="position: relative; cursor: pointer;" onclick="copyToClipboard('emailInput', this)">
         <div class="timer email" title="Email" style="width: 105px;">Email</div>
-        <input class="copy-value" style="cursor: pointer;" id="emailInput" placeholder="" value="<?php echo $account['email'] ?>" readonly>
+        <input class="copy-value" style="cursor: pointer;" id="emailInput" placeholder="" value="<?php echo trim($account['email']) ?>" readonly>
         <span class="copy-icon" style="position: absolute; right: 20px; top: 16px; width: 10px; height: 10px;"></span>
     </div>
     <div class="code hidden" style="position: relative; cursor: pointer;" onclick="copyToClipboard('passInput', this)">
         <div class="timer pass" title="Pass" style="width: 105px;">Pass</div>
-        <input class="copy-value" style="cursor: pointer;" id="passInput" placeholder="" value="<?php echo $account['password'] ?>" readonly>
+        <input class="copy-value" style="cursor: pointer;" id="passInput" placeholder="" value="<?php echo trim($account['password']) ?>" readonly>
         <span class="copy-icon" style="position: absolute; right: 20px; top: 16px; width: 10px; height: 10px;"></span>
     </div>
     <div class="code hidden" style="position: relative; cursor: pointer;">
@@ -239,15 +242,38 @@
     </div>
     <?php
     if ($account['code_2fa'] != null) {
-    ?> <div class="" style="color:rgb(45, 185, 78);" title="Mã 2FA">Mã Authenticator / Mã 1 lần</div>
+        $period = 30; // mặc định là 30 giây
+        $currentTime = time();
+        $secondsRemaining = $period - ($currentTime % $period);
+        $raw = $account['code_2fa'];
+        $secret = strtoupper(str_replace(' ', '', $raw));
+        $totp = TOTP::create($secret);
+        $otp = $totp->now();
+
+    ?> <div class="" style="color:rgb(45, 185, 78);" title="Mã 2FA">Mã Authenticator / Mã 1 lần <span style="color: black;">(Làm mới sau <span style="color:red" id="timeDown"><?php echo $secondsRemaining ?></span> giây)</span></div>
+
 
         <div class="code" style="position: relative; cursor: pointer; height: 50px;" onclick="copyToClipboard('code2fa', this)">
-            <input class="text-red copy-value" style="cursor: pointer;" id="code2fa" placeholder="" value="<?php echo $_GET['otp'] ?>" readonly>
+            <input class="text-red copy-value" style="cursor: pointer;" id="code2fa" placeholder="" value="<?php echo $otp ?>" readonly>
             <span class="copy-icon" style="position: absolute; right: 20px; top: 15px; width: 10px; height: 10px;"></span>
         </div>
-    <?php } ?>
+        <script>
+            let seconds = <?php echo $secondsRemaining ?>;
+            const countdownEl = document.getElementById("timeDown");
+            const secret = "<?php echo $secret ?>";
 
-    </div>
+            const interval = setInterval(() => {
+                seconds--;
+
+                if (seconds == 0) {
+                    seconds = 30;
+                }
+
+                countdownEl.innerHTML = `<span style='color: red;'>${seconds}</span>`;
+            }, 1000);
+        </script>
+        </div>
+    <?php } ?>
     <script>
         function showNotification(message, type = 'success') {
             console.log('showNotification called:', message, type); // Debug log

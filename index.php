@@ -16,7 +16,6 @@
 
 <body>
     <?php
-
     require_once 'controllers/CodeController.php';
     require_once 'controllers/AccountController.php';
     require_once 'controllers/CategoryController.php';

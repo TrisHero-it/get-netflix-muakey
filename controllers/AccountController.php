@@ -17,7 +17,7 @@ class AccountController extends Account
 
     public function index()
     {
-        $limit = 20; // số bản ghi mỗi trang
+        $limit = 100; // số bản ghi mỗi trang
         $page = isset($_GET['page']) && $_GET['page'] > 0 ? (int) $_GET['page'] : 1;
         $offset = ($page - 1) * $limit;
         if (isset($_GET['search']) && $_GET['search'] != '') {
@@ -56,6 +56,8 @@ class AccountController extends Account
     {
         $shipment = $this->getLastShipments();
         $shipment = $shipment['shipments'] + 1;
+        // expired_at được truyền từ form (tính sẵn theo số ngày)
+        $expiredAt = isset($_POST['expired_at']) && $_POST['expired_at'] !== '' ? "'" . $_POST['expired_at'] . "'" : 'null';
         if ($_FILES['excel_file']['name'] == '') {
             $email = $_POST['email'];
             $category = $_POST['category_id'];
@@ -70,7 +72,8 @@ class AccountController extends Account
                 $_POST['user'],
                 $shipment,
                 $pin,
-                $_POST['account_id'] ?? 'null'
+                $_POST['account_id'] ?? 'null',
+                $expiredAt
             );
         } else {
             $fileTmpPath = $_FILES['excel_file']['tmp_name'];
@@ -95,7 +98,8 @@ class AccountController extends Account
                     $item[3] ?? 1,
                     $shipment,
                     $item[4] ?? 'null',
-                    "null"
+                    "null",
+                    'null' // excel không có expired_at, để null
                 );
             }
         }
@@ -110,6 +114,7 @@ class AccountController extends Account
         $oldEmail = $_POST['old_email'];
         $newEmail = $_POST['new_email'];
         $newPassword = $_POST['new_password'];
+        $new2fa = $_POST['new_2fa'];
         $checkAccounts = $this->getAccountsByEmail(trim($oldEmail));
         foreach ($checkAccounts as $account) {
 
@@ -126,16 +131,18 @@ class AccountController extends Account
             $data = $account;
             $data['email'] = $newEmail;
             $data['password'] = $newPassword;
+            $expiredAt = isset($data['expired_at']) && $data['expired_at'] !== '' ? "'" . $data['expired_at'] . "'" : 'null';
             $this->insert2(
                 $data['email'],
                 $data['password'],
-                $data['code_2fa'] == '' ? 'null' : "'" . $data['code_2fa'] . "'",
+                $new2fa == null ? ($data['code_2fa'] == '' ? 'null' : "'" . $data['code_2fa'] . "'") : "'" . $new2fa . "'",
                 'null',
                 $data['category_id'],
                 $data['user'],
                 $shipment,
                 $data['pin_code'] == '' ? 'null' : "'" . $data['pin_code'] . "'",
-                $account['id']
+                $account['id'],
+                $expiredAt
             );
         }
 
@@ -155,6 +162,7 @@ class AccountController extends Account
     public function update()
     {
         $id = $_GET['id'];
+        $expiredAt = isset($_POST['expired_at']) && $_POST['expired_at'] !== '' ? "'" . $_POST['expired_at'] . "'" : 'null';
         $this->updateAccount(
             $id,
             $_POST['email'],
@@ -162,7 +170,8 @@ class AccountController extends Account
             $_POST['code_2fa'] == '' ? 'null' : "'" . $_POST['code_2fa'] . "'",
             $_POST['category_id'],
             $_POST['user'],
-            $_POST['pin'] == '' ? 'null' : "'" . $_POST['pin'] . "'"
+            $_POST['pin'] == '' ? 'null' : "'" . $_POST['pin'] . "'",
+            $expiredAt
         );
 
         header("Location: ?act=list");

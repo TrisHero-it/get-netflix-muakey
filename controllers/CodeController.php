@@ -32,7 +32,6 @@ class CodeController extends Account
         //     $results = $this->getMailNetflix($account['email']);
         //     $account['mail'] = $results;
         // }
-
         require_once "views/index.php";
     }
 
