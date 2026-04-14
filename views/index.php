@@ -49,9 +49,22 @@ if (!$isExpired) {
            url('css/images/capnhaphogiadinh.jpg')" alt="">
 
 <?php else: ?>
-    <?php if ($account['code_2fa'] == null) { ?>
-        <div style="margin-top: 50px;">
-        <?php } ?>
+    <div style="margin-top: 50px; position:relative; max-width: 1500px; margin: 50px auto 0px auto">
+
+        <?php
+        if ($account['category_id'] == "1") {
+            # code...
+        ?> <a href="https://huong-dan-muakey.notion.site/huong-dan-lay-ma-cap-nhap-gia-dinh-netflix" id="image1" target="_blank">
+                <img src="css/images/capnhaphogiadinh.jpg" alt="" style="position: absolute; width: 400px; height: 400px; object-fit: cover; object-position: center; top: 150px; border-radius: 40px;">
+            </a>
+
+            <a href="/css/images/hdnetflix.jpg" id="image2" target="_blank">
+                <img src="css/images/hdnetflix.jpg" alt="" style="position: absolute; width: 400px; height: 400px; object-fit: cover; object-position: center; top: 150px; border-radius: 40px; right:0px">
+            </a>
+        <?php
+        }
+        ?>
+
         <iframe id="iframe2fa" allow="clipboard-write" src="?act=index2&account=<?php echo urlencode(json_encode($account)) ?>" frameborder="0" width="100%" <?php if ($account['code_2fa'] != null) { ?> height="700" <?php } else { ?> height="600" <?php } ?>></iframe>
 
         <?php if ($account['code_2fa'] != null) { ?>
@@ -127,7 +140,6 @@ if (!$isExpired) {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="button" class="btn btn-primary">Xem chi tiết</button>
                     </div>
                 </div>
             </div>
@@ -136,6 +148,9 @@ if (!$isExpired) {
             if (window.innerWidth > 768) {
                 document.getElementById('modal-content').style.width = '80%';
                 document.getElementById('modal-content').style.margin = '0 auto';
+            } else {
+                document.getElementById("image1").style.display = "none"
+                document.getElementById("image2").style.display = "none"
             }
             $(document).ready(function() {
                 $('#exampleModal').modal('show');

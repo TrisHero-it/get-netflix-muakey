@@ -99,7 +99,7 @@ class AccountController extends Account
                     $shipment,
                     $item[4] ?? 'null',
                     "null",
-                    'null' // excel không có expired_at, để null
+                    date("Y-m-d", strtotime("$item[5]")),
                 );
             }
         }
@@ -316,6 +316,7 @@ class AccountController extends Account
         $sheet->setCellValue('C1', 'Code 2FA (Nếu có)');
         $sheet->setCellValue('D1', 'User (Nếu có)');
         $sheet->setCellValue('E1', 'Mã Pin (Nếu có)');
+        $sheet->setCellValue('F1', 'Thời hạn');
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="form-add-account.xlsx"');

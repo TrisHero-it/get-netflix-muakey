@@ -284,11 +284,11 @@
                 container = document.createElement('div');
                 container.className = 'toast-container';
                 container.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 9999;
-                `;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+            `;
                 document.body.appendChild(container);
             }
 
@@ -296,20 +296,20 @@
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             toast.style.cssText = `
-                min-width: 250px;
-                margin-bottom: 10px;
-                padding: 15px 20px;
-                border-radius: 4px;
-                color: white;
-                font-family: 'Arial', sans-serif;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-                opacity: 1;
-                transform: translateX(0);
-                transition: all 0.3s ease-out;
-            `;
+            min-width: 250px;
+            margin-bottom: 10px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            transform: translateX(0);
+            transition: all 0.3s ease-out;
+        `;
 
             // Áp dụng màu sắc theo type
             if (type === 'success') {
@@ -333,19 +333,19 @@
             closeBtn.className = 'toast-close';
             closeBtn.innerHTML = '&times;';
             closeBtn.style.cssText = `
-                background: none;
-                border: none;
-                color: inherit;
-                font-size: 18px;
-                cursor: pointer;
-                opacity: 0.8;
-                padding: 0;
-                width: 20px;
-                height: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            `;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.8;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
             closeBtn.onclick = () => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(100%)';
