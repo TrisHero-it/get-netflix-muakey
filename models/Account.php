@@ -50,7 +50,7 @@ class Account extends db
     public function insert($email, $password, $code2fa, $code, $category, $user, $shipment = 1, $pin = null, $account_id = null, $expired_at = null)
     {
         $query = "INSERT INTO accounts (email, password, code_2fa, code, category_id, user, shipments, pin_code, account_id, expired_at) 
-        VALUES ('$email', '$password', $code2fa , '$code', '$category', '$user', '$shipment', $pin, $account_id, '$expired_at')";
+        VALUES ('$email', '$password', $code2fa , '$code', '$category', '$user', '$shipment', $pin, $account_id, $expired_at)";
         $this->getData($query, false);
     }
 

@@ -56,11 +56,17 @@ class AccountController extends Account
     {
         $shipment = $this->getLastShipments();
         $shipment = $shipment['shipments'] + 1;
-        // expired_at được truyền từ form (tính sẵn theo số ngày)
-        $expiredAt = isset($_POST['expired_at']) && $_POST['expired_at'] !== '' ? "'" . $_POST['expired_at'] . "'" : 'null';
+        $categoryId = isset($_POST['category_id']) ? (int) $_POST['category_id'] : 0;
+
+        $postedExpiredAt = isset($_POST['expired_at']) ? trim((string) $_POST['expired_at']) : '';
+        if ($categoryId === 1 && $postedExpiredAt === '') {
+            $postedExpiredAt = date('Y-m-d', strtotime('+30 days'));
+        }
+        $expiredAt = $postedExpiredAt !== '' ? "'" . $postedExpiredAt . "'" : 'null';
+
         if ($_FILES['excel_file']['name'] == '') {
             $email = $_POST['email'];
-            $category = $_POST['category_id'];
+            $category = $categoryId;
             $code2fa = $_POST['code_2fa'] == "" ? 'null' : "'" . $_POST['code_2fa'] . "'";
             $pin = $_POST['pin'] == "" ? 'null' : "'" . $_POST['pin'] . "'";
             $this->insert(
@@ -89,17 +95,26 @@ class AccountController extends Account
                     $i++;
                     continue;
                 }
+
+                $excelExpiredAtRaw = isset($item[5]) ? trim((string) $item[5]) : '';
+                if ($categoryId === 1 && $excelExpiredAtRaw === '') {
+                    $excelExpiredAt = date('Y-m-d', strtotime('+30 days'));
+                } else {
+                    $excelExpiredAt = $excelExpiredAtRaw !== '' ? date("Y-m-d", strtotime($excelExpiredAtRaw)) : '';
+                }
+                $excelExpiredAtSql = $excelExpiredAt !== '' ? "'" . $excelExpiredAt . "'" : 'null';
+
                 $this->insert(
                     $item[0],
                     $item[1],
                     $item[2] != null ? "'" . $item[2] . "'" : 'null',
                     $this->randomString(),
-                    $_POST['category_id'],
+                    $categoryId,
                     $item[3] ?? 1,
                     $shipment,
                     $item[4] ?? 'null',
                     "null",
-                    date("Y-m-d", strtotime("$item[5]")),
+                    $excelExpiredAtSql,
                 );
             }
         }

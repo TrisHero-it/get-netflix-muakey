@@ -59,8 +59,15 @@
     (function() {
         const daysInput = document.getElementById('expired_at_days');
         const expiredInput = document.getElementById('expired_at');
+        const categorySelect = document.getElementById('category_id');
 
         function updateExpiredAt() {
+            const categoryId = parseInt(categorySelect.value || '0', 10);
+            if (categoryId !== 1) {
+                expiredInput.value = '';
+                return;
+            }
+
             const days = parseInt(daysInput.value || '0', 10);
             const now = new Date();
             now.setDate(now.getDate() + (isNaN(days) ? 0 : days));
@@ -75,5 +82,6 @@
 
         // Cập nhật khi người dùng đổi số ngày
         daysInput.addEventListener('input', updateExpiredAt);
+        categorySelect.addEventListener('change', updateExpiredAt);
     })();
 </script>
